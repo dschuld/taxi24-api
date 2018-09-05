@@ -16,7 +16,7 @@
         },
         {
             "fieldName": "status",
-            "fieldType": "String"
+            "fieldType": "Integer"
         }
     ],
     "relationships": [],

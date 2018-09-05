@@ -38,7 +38,7 @@ public class Driver implements Serializable {
     private Float longitude;
 
 
-    @Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.ORDINAL)
     @Column(name = "status")
     private DriverStatus status;
 
