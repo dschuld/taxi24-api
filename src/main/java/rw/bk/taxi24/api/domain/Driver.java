@@ -25,6 +25,7 @@ public class Driver implements Serializable {
 
     /**
      * The firstname attribute.
+     * TODO model other properties
      */
     @ApiModelProperty(value = "The firstname attribute.")
     @Column(name = "name")

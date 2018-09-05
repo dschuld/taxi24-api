@@ -6,40 +6,33 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 import rw.bk.taxi24.api.domain.Driver;
 import rw.bk.taxi24.api.domain.DriverStatus;
+import rw.bk.taxi24.api.domain.Rider;
 import rw.bk.taxi24.api.repository.DriverRepository;
+import rw.bk.taxi24.api.repository.RiderRepository;
 
 @Component
 public class DataLoader implements ApplicationRunner {
 
-    private DriverRepository driverRepository;
+    private final RiderRepository riderRepository;
+    private final DriverRepository driverRepository;
 
     @Autowired
-    public DataLoader(DriverRepository userRepository) {
-        this.driverRepository = userRepository;
+    public DataLoader(DriverRepository driverRepository, RiderRepository riderRepository) {
+        this.driverRepository = driverRepository;
+        this.riderRepository = riderRepository;
     }
 
     public void run(ApplicationArguments args) {
-        Driver driver = new Driver();
-        driver.setName("David");
-        driver.setLatitude(50.1f);
-        driver.setLongitude(1.2f);
-        driver.setStatus(DriverStatus.AVAILABLE);
+        Driver driver = new Driver().name("David").latitude(50.1f).longitude(1.2f).status(DriverStatus.AVAILABLE);
+        driverRepository.save(driver);
+        driver = new Driver().name("Melanie").latitude(50.1f).longitude(51.2f).status(DriverStatus.UNAVAILABLE);
+        driverRepository.save(driver);
+        driver = new Driver().name("Filou").latitude(3.1f).longitude(11.2f).status(DriverStatus.OCCUPIED);
         driverRepository.save(driver);
 
-
-        driver = new Driver();
-        driver.setName("Melanie");
-        driver.setLatitude(50.1f);
-        driver.setLongitude(51.2f);
-        driver.setStatus(DriverStatus.UNAVAILABLE);
-        driverRepository.save(driver);
-
-
-        driver = new Driver();
-        driver.setName("Filou");
-        driver.setLatitude(3.1f);
-        driver.setLongitude(11.2f);
-        driver.setStatus(DriverStatus.OCCUPIED);
-        driverRepository.save(driver);
+        Rider rider = new Rider().name("Rider1").amountRides(0);
+        riderRepository.save(rider);
+        rider = new Rider().name("Rider2").amountRides(10);
+        riderRepository.save(rider);
     }
 }

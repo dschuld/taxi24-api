@@ -1,21 +1,15 @@
-
 /**
- * The Employee entity.
+ * The Rider entity.
  */
-entity Driver {
-	/**
-	* The firstname attribute.
-	*/
+entity Rider {
 	name String,
-	latitude Float,
-    longitude Float,
-    status String,
+	amountRides Integer,
     id Integer
 }
 
 
 // Set pagination options
-paginate Driver with infinite-scroll
+paginate Rider with infinite-scroll
 
 dto * with mapstruct
 
