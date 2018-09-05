@@ -1,0 +1,23 @@
+
+/**
+ * The Employee entity.
+ */
+entity Driver {
+	/**
+	* The firstname attribute.
+	*/
+	name String,
+	latitude Float,
+    longitude Float,
+    status String,
+    id Integer
+}
+
+
+// Set pagination options
+paginate Driver with infinite-scroll
+
+dto * with mapstruct
+
+// Set service options to all except few
+service all with serviceClass
