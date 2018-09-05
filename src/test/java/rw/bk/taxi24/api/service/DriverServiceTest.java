@@ -8,9 +8,17 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.test.context.junit4.SpringRunner;
 import rw.bk.taxi24.api.domain.Driver;
 import rw.bk.taxi24.api.domain.DriverStatus;
 import rw.bk.taxi24.api.repository.DriverRepository;
@@ -24,22 +32,23 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(SpringRunner.class)
+@SpringBootTest
 public class DriverServiceTest {
 
-    @Mock
+    @MockBean
     private DriverRepository repository;
 
     @Spy
     private DriverMapper driverMapper;
 
+    @Autowired
     private DriverService service;
 
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        service = new DriverService(repository, driverMapper);
     }
 
 
