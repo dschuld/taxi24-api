@@ -1,0 +1,13 @@
+version: '2'
+services:
+    taxi24api-app:
+        image: taxi24api
+        environment:
+            # - _JAVA_OPTIONS=-Xmx512m -Xms256m
+            - SPRING_PROFILES_ACTIVE=prod,swagger
+            - SPRING_DATASOURCE_URL=jdbc:postgresql://taxi24api-postgresql:5432/taxi24api
+            - JHIPSTER_SLEEP=10 # gives time for the database to boot before the application
+    taxi24api-postgresql:
+        extends:
+            file: postgresql.yml
+            service: taxi24api-postgresql
