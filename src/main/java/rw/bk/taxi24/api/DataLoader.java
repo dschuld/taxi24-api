@@ -23,16 +23,16 @@ public class DataLoader implements ApplicationRunner {
     }
 
     public void run(ApplicationArguments args) {
-        Driver driver = new Driver().name("David").latitude(50.1f).longitude(1.2f).status(DriverStatus.AVAILABLE);
-        driverRepository.save(driver);
-        driver = new Driver().name("Melanie").latitude(50.1f).longitude(51.2f).status(DriverStatus.UNAVAILABLE);
-        driverRepository.save(driver);
-        driver = new Driver().name("Filou").latitude(3.1f).longitude(11.2f).status(DriverStatus.OCCUPIED);
-        driverRepository.save(driver);
-
-        Rider rider = new Rider().name("Rider1").amountRides(0);
-        riderRepository.save(rider);
-        rider = new Rider().name("Rider2").amountRides(10);
-        riderRepository.save(rider);
+//        Driver driver = new Driver().name("David").latitude(50.1f).longitude(1.2f).status(DriverStatus.AVAILABLE);
+//        driverRepository.save(driver);
+//        driver = new Driver().name("Melanie").latitude(50.1f).longitude(51.2f).status(DriverStatus.UNAVAILABLE);
+//        driverRepository.save(driver);
+//        driver = new Driver().name("Filou").latitude(3.1f).longitude(11.2f).status(DriverStatus.OCCUPIED);
+//        driverRepository.save(driver);
+//
+//        Rider rider = new Rider().name("Rider1").amountRides(0);
+//        riderRepository.save(rider);
+//        rider = new Rider().name("Rider2").amountRides(10);
+//        riderRepository.save(rider);
     }
 }

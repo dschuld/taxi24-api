@@ -92,7 +92,7 @@ public class DriverResource {
     @Timed
     public ResponseEntity<List<DriverDTO>> getAllDrivers(Pageable pageable, @RequestParam(value = "status", required = false) String status) {
         log.debug("REST request to get a page of Drivers");
-        Page<DriverDTO> page = status != null && status.equals(DriverStatus.AVAILABLE.toString()) ? driverService.findAll(pageable) : driverService.findAllAvailableDrivers(pageable);
+        Page<DriverDTO> page = status != null && status.toLowerCase().equals(DriverStatus.AVAILABLE.toString().toLowerCase()) ? driverService.findAllAvailableDrivers(pageable) : driverService.findAll(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/drivers");
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }

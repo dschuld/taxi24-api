@@ -179,9 +179,9 @@ public class DriverResourceIntTest {
         driverRepository.saveAndFlush(driver);
         Driver occupiedDriver = createEntity(this.em);
         occupiedDriver.setStatus(DriverStatus.OCCUPIED);
-        driverRepository.saveAndFlush(occupiedDriver);
         String occupiedName = "Occupied";
         occupiedDriver.setName(occupiedName);
+        driverRepository.saveAndFlush(occupiedDriver);
 
 
         // Get all the driverList
