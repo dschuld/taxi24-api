@@ -1,6 +1,6 @@
 package rw.bk.taxi24.api.service.dto;
 
-import rw.bk.taxi24.api.domain.DriverStatus;
+import rw.bk.taxi24.api.domain.enumeration.DriverStatus;
 
 import java.io.Serializable;
 import java.util.Objects;

@@ -5,7 +5,7 @@ import org.springframework.data.domain.Pageable;
 import rw.bk.taxi24.api.domain.Driver;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.stereotype.Repository;
-import rw.bk.taxi24.api.domain.DriverStatus;
+import rw.bk.taxi24.api.domain.enumeration.DriverStatus;
 
 
 /**

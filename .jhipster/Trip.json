@@ -1,0 +1,37 @@
+{
+    "name": "Trip",
+    "fields": [
+        {
+            "fieldName": "driverId",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "riderId",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "tripStatus",
+            "fieldType": "TripStatus",
+            "fieldValues": "REQUESTED,ACTIVE,CANCELLED,COMPLETED"
+        },
+        {
+            "fieldName": "duration",
+            "fieldType": "Float"
+        },
+        {
+            "fieldName": "distance",
+            "fieldType": "Float"
+        }
+    ],
+    "relationships": [],
+    "changelogDate": "20180906073755",
+    "entityTableName": "trip",
+    "dto": "mapstruct",
+    "pagination": "infinite-scroll",
+    "service": "serviceClass",
+    "jpaMetamodelFiltering": false,
+    "fluentMethods": true,
+    "clientRootFolder": "",
+    "applications": "*",
+    "microserviceName": "taxi24api"
+}

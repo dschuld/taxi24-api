@@ -1,15 +1,21 @@
-/**
- * The Rider entity.
- */
-entity Rider {
-	name String,
-	amountRides Integer,
+enum TripStatus {
+    REQUESTED, ACTIVE, CANCELLED, COMPLETED
+}
+
+entity Trip {
+	driverId Integer,
+	riderId Integer,
+	tripStatus	TripStatus,
+	duration	Float,
+	distance	Float,
     id Integer
 }
 
 
+
+
 // Set pagination options
-paginate Rider with infinite-scroll
+paginate Trip with infinite-scroll
 
 dto * with mapstruct
 

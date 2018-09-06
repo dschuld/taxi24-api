@@ -3,7 +3,7 @@ package rw.bk.taxi24.api.web.rest;
 import rw.bk.taxi24.api.Taxi24ApiApp;
 
 import rw.bk.taxi24.api.domain.Driver;
-import rw.bk.taxi24.api.domain.DriverStatus;
+import rw.bk.taxi24.api.domain.enumeration.DriverStatus;
 import rw.bk.taxi24.api.repository.DriverRepository;
 import rw.bk.taxi24.api.service.DriverService;
 import rw.bk.taxi24.api.service.dto.DriverDTO;

@@ -1,4 +1,4 @@
-package rw.bk.taxi24.api.domain;
+package rw.bk.taxi24.api.domain.enumeration;
 
 public enum DriverStatus {
 

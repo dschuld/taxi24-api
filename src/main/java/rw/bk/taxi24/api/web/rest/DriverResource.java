@@ -1,7 +1,7 @@
 package rw.bk.taxi24.api.web.rest;
 
 import com.codahale.metrics.annotation.Timed;
-import rw.bk.taxi24.api.domain.DriverStatus;
+import rw.bk.taxi24.api.domain.enumeration.DriverStatus;
 import rw.bk.taxi24.api.service.DriverService;
 import rw.bk.taxi24.api.web.rest.errors.BadRequestAlertException;
 import rw.bk.taxi24.api.web.rest.util.HeaderUtil;
@@ -50,7 +50,7 @@ public class DriverResource {
     @PostMapping("/drivers")
     @Timed
     public ResponseEntity<DriverDTO> createDriver(@RequestBody DriverDTO driverDTO) throws URISyntaxException {
-        log.debug("REST request to save Driver : {}", driverDTO);
+        log.debug("REST request to requestTrip Driver : {}", driverDTO);
         if (driverDTO.getId() != null) {
             throw new BadRequestAlertException("A new driver cannot already have an ID", ENTITY_NAME, "idexists");
         }

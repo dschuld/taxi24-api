@@ -1,7 +1,7 @@
 package rw.bk.taxi24.api.service;
 
 import rw.bk.taxi24.api.domain.Driver;
-import rw.bk.taxi24.api.domain.DriverStatus;
+import rw.bk.taxi24.api.domain.enumeration.DriverStatus;
 import rw.bk.taxi24.api.repository.DriverRepository;
 import rw.bk.taxi24.api.service.dto.DriverDTO;
 import rw.bk.taxi24.api.service.mapper.DriverMapper;
@@ -36,11 +36,11 @@ public class DriverService {
     /**
      * Save a driver.
      *
-     * @param driverDTO the entity to save
+     * @param driverDTO the entity to requestTrip
      * @return the persisted entity
      */
     public DriverDTO save(DriverDTO driverDTO) {
-        log.debug("Request to save Driver : {}", driverDTO);
+        log.debug("Request to requestTrip Driver : {}", driverDTO);
         Driver driver = driverMapper.toEntity(driverDTO);
         driver = driverRepository.save(driver);
         return driverMapper.toDto(driver);

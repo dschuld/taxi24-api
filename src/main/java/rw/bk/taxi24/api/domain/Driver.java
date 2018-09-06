@@ -2,6 +2,7 @@ package rw.bk.taxi24.api.domain;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import rw.bk.taxi24.api.domain.enumeration.DriverStatus;
 
 import javax.persistence.*;
 
@@ -28,7 +29,7 @@ public class Driver implements Serializable {
      * TODO model other properties
      */
     @ApiModelProperty(value = "The firstname attribute.")
-    @Column(name = "name")
+    @Column(name = "name", nullable = false)
     private String name;
 
     @Column(name = "latitude")
@@ -39,7 +40,7 @@ public class Driver implements Serializable {
 
 
     @Enumerated(EnumType.ORDINAL)
-    @Column(name = "status")
+    @Column(name = "status", nullable = false)
     private DriverStatus status;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove

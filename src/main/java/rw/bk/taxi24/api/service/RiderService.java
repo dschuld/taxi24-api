@@ -35,11 +35,11 @@ public class RiderService {
     /**
      * Save a rider.
      *
-     * @param riderDTO the entity to save
+     * @param riderDTO the entity to requestTrip
      * @return the persisted entity
      */
     public RiderDTO save(RiderDTO riderDTO) {
-        log.debug("Request to save Rider : {}", riderDTO);
+        log.debug("Request to requestTrip Rider : {}", riderDTO);
         Rider rider = riderMapper.toEntity(riderDTO);
         rider = riderRepository.save(rider);
         return riderMapper.toDto(rider);

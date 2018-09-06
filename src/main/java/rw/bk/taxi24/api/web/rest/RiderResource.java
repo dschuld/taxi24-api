@@ -49,7 +49,7 @@ public class RiderResource {
     @PostMapping("/riders")
     @Timed
     public ResponseEntity<RiderDTO> createRider(@RequestBody RiderDTO riderDTO) throws URISyntaxException {
-        log.debug("REST request to save Rider : {}", riderDTO);
+        log.debug("REST request to requestTrip Rider : {}", riderDTO);
         if (riderDTO.getId() != null) {
             throw new BadRequestAlertException("A new rider cannot already have an ID", ENTITY_NAME, "idexists");
         }
