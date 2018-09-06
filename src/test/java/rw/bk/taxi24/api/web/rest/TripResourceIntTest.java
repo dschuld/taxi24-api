@@ -3,10 +3,16 @@ package rw.bk.taxi24.api.web.rest;
 import org.junit.Ignore;
 import rw.bk.taxi24.api.Taxi24ApiApp;
 
+import rw.bk.taxi24.api.domain.Driver;
+import rw.bk.taxi24.api.domain.Rider;
 import rw.bk.taxi24.api.domain.Trip;
+import rw.bk.taxi24.api.domain.enumeration.DriverStatus;
+import rw.bk.taxi24.api.repository.DriverRepository;
+import rw.bk.taxi24.api.repository.RiderRepository;
 import rw.bk.taxi24.api.repository.TripRepository;
 import rw.bk.taxi24.api.service.TripService;
 import rw.bk.taxi24.api.service.dto.TripDTO;
+import rw.bk.taxi24.api.service.dto.TripRequestDTO;
 import rw.bk.taxi24.api.service.mapper.TripMapper;
 import rw.bk.taxi24.api.web.rest.errors.ExceptionTranslator;
 
@@ -42,14 +48,13 @@ import rw.bk.taxi24.api.domain.enumeration.TripStatus;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Taxi24ApiApp.class)
-@Ignore
 public class TripResourceIntTest {
 
-    private static final Integer DEFAULT_DRIVER_ID = 1;
-    private static final Integer UPDATED_DRIVER_ID = 2;
+    private static final Long DEFAULT_DRIVER_ID = 1l;
+    private static final Long UPDATED_DRIVER_ID = 2l;
 
-    private static final Integer DEFAULT_RIDER_ID = 1;
-    private static final Integer UPDATED_RIDER_ID = 2;
+    private static final Long DEFAULT_RIDER_ID = 1l;
+    private static final Long UPDATED_RIDER_ID = 2l;
 
     private static final TripStatus DEFAULT_TRIP_STATUS = TripStatus.REQUESTED;
     private static final TripStatus UPDATED_TRIP_STATUS = TripStatus.ACTIVE;
@@ -62,6 +67,12 @@ public class TripResourceIntTest {
 
     @Autowired
     private TripRepository tripRepository;
+
+    @Autowired
+    private DriverRepository driverRepository;
+
+    @Autowired
+    private RiderRepository riderRepository;
 
 
     @Autowired
@@ -87,6 +98,12 @@ public class TripResourceIntTest {
 
     private Trip trip;
 
+    private Driver availableDriver;
+
+    private Driver occupiedDriver;
+
+    private Rider rider;
+
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
@@ -96,76 +113,47 @@ public class TripResourceIntTest {
             .setControllerAdvice(exceptionTranslator)
             .setConversionService(createFormattingConversionService())
             .setMessageConverters(jacksonMessageConverter).build();
-    }
 
-    /**
-     * Create an entity for this test.
-     *
-     * This is a static method, as tests for other entities might also need it,
-     * if they test an entity which requires the current entity.
-     */
-    public static Trip createEntity(EntityManager em) {
-        Trip trip = new Trip()
-//            .driverId(DEFAULT_DRIVER_ID)
-//            .riderId(DEFAULT_RIDER_ID)
-            .tripStatus(DEFAULT_TRIP_STATUS)
-            .duration(DEFAULT_DURATION)
-            .distance(DEFAULT_DISTANCE);
-        return trip;
-    }
-
-    @Before
-    public void initTest() {
-        trip = createEntity(em);
+        availableDriver = new Driver().status(DriverStatus.AVAILABLE).latitude(1.1f).latitude(2.2f).name("AvailableDriver");
+        occupiedDriver = new Driver().status(DriverStatus.OCCUPIED).latitude(1.1f).latitude(2.2f).name("AvailableDriver");
+        rider = new Rider().name("TheRider").amountRides(0);
+        driverRepository.save(availableDriver);
+        driverRepository.save(occupiedDriver);
+        riderRepository.save(rider);
     }
 
     @Test
     @Transactional
-    public void createTrip() throws Exception {
+    public void requestTrip() throws Exception {
         int databaseSizeBeforeCreate = tripRepository.findAll().size();
 
+        Driver driver = driverRepository.findByStatus(DriverStatus.AVAILABLE).get(0);
+        Rider rider = riderRepository.findAll().get(0);
+
         // Create the Trip
-        TripDTO tripDTO = tripMapper.toDto(trip);
+        TripRequestDTO tripRequestDTO = new TripRequestDTO(driver.getId(), rider.getId());
         restTripMockMvc.perform(post("/api/trips")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(tripDTO)))
+            .content(TestUtil.convertObjectToJsonBytes(tripRequestDTO)))
             .andExpect(status().isCreated());
 
         // Validate the Trip in the database
         List<Trip> tripList = tripRepository.findAll();
         assertThat(tripList).hasSize(databaseSizeBeforeCreate + 1);
         Trip testTrip = tripList.get(tripList.size() - 1);
-//        assertThat(testTrip.getDriverId()).isEqualTo(DEFAULT_DRIVER_ID);
-//        assertThat(testTrip.getRiderId()).isEqualTo(DEFAULT_RIDER_ID);
+        assertThat(testTrip.getDriver().getId()).isEqualTo(driver.getId());
+        assertThat(testTrip.getRider().getId()).isEqualTo(rider.getId());
         assertThat(testTrip.getTripStatus()).isEqualTo(DEFAULT_TRIP_STATUS);
-        assertThat(testTrip.getDuration()).isEqualTo(DEFAULT_DURATION);
-        assertThat(testTrip.getDistance()).isEqualTo(DEFAULT_DISTANCE);
     }
 
-    @Test
-    @Transactional
-    public void createTripWithExistingId() throws Exception {
-        int databaseSizeBeforeCreate = tripRepository.findAll().size();
-
-        // Create the Trip with an existing ID
-        trip.setId(1L);
-        TripDTO tripDTO = tripMapper.toDto(trip);
-
-        // An entity with an existing ID cannot be created, so this API call must fail
-        restTripMockMvc.perform(post("/api/trips")
-            .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(tripDTO)))
-            .andExpect(status().isBadRequest());
-
-        // Validate the Trip in the database
-        List<Trip> tripList = tripRepository.findAll();
-        assertThat(tripList).hasSize(databaseSizeBeforeCreate);
-    }
 
     @Test
     @Transactional
     public void getAllTrips() throws Exception {
-        // Initialize the database
+
+        Trip trip = new Trip().tripStatus(TripStatus.REQUESTED).driver(availableDriver).rider(rider);
+        tripRepository.saveAndFlush(trip);
+        trip = new Trip().tripStatus(TripStatus.COMPLETED).driver(occupiedDriver).rider(rider);
         tripRepository.saveAndFlush(trip);
 
         // Get all the tripList
@@ -173,11 +161,11 @@ public class TripResourceIntTest {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(trip.getId().intValue())))
-            .andExpect(jsonPath("$.[*].driverId").value(hasItem(DEFAULT_DRIVER_ID)))
-            .andExpect(jsonPath("$.[*].riderId").value(hasItem(DEFAULT_RIDER_ID)))
-            .andExpect(jsonPath("$.[*].tripStatus").value(hasItem(DEFAULT_TRIP_STATUS.toString())))
-            .andExpect(jsonPath("$.[*].duration").value(hasItem(DEFAULT_DURATION.doubleValue())))
-            .andExpect(jsonPath("$.[*].distance").value(hasItem(DEFAULT_DISTANCE.doubleValue())));
+            .andExpect(jsonPath("$.[*].driverId").value(hasItem(availableDriver.getId())))
+            .andExpect(jsonPath("$.[*].driverId").value(hasItem(availableDriver.getId())))
+            .andExpect(jsonPath("$.[*].riderId").value(hasItem(occupiedDriver.getId())))
+            .andExpect(jsonPath("$.[*].riderId").value(hasItem(rider.getId())))
+            .andExpect(jsonPath("$.[*].tripStatus").value(hasItem(DEFAULT_TRIP_STATUS.toString())));
     }
 
 

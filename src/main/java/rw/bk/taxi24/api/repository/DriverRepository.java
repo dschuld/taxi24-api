@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.*;
 import org.springframework.stereotype.Repository;
 import rw.bk.taxi24.api.domain.enumeration.DriverStatus;
 
+import java.util.List;
+
 
 /**
  * Spring Data  repository for the Driver entity.
@@ -16,4 +18,5 @@ import rw.bk.taxi24.api.domain.enumeration.DriverStatus;
 public interface DriverRepository extends JpaRepository<Driver, Long> {
 
     Page<Driver> findByStatus(Pageable pageable, DriverStatus status);
+    List<Driver> findByStatus(DriverStatus status);
 }

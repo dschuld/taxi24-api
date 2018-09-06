@@ -2,6 +2,7 @@ package rw.bk.taxi24.api.web.rest;
 
 import com.codahale.metrics.annotation.Timed;
 import rw.bk.taxi24.api.service.TripService;
+import rw.bk.taxi24.api.service.dto.TripRequestDTO;
 import rw.bk.taxi24.api.web.rest.errors.BadRequestAlertException;
 import rw.bk.taxi24.api.web.rest.util.HeaderUtil;
 import rw.bk.taxi24.api.web.rest.util.PaginationUtil;
@@ -48,12 +49,10 @@ public class TripResource {
      */
     @PostMapping("/trips")
     @Timed
-    public ResponseEntity<TripDTO> createTrip(@RequestBody TripDTO tripDTO) throws URISyntaxException {
+    public ResponseEntity<TripDTO> createTrip(@RequestBody TripRequestDTO tripDTO) throws URISyntaxException {
         log.debug("REST request to requestTrip Trip : {}", tripDTO);
-        if (tripDTO.getId() != null) {
-            throw new BadRequestAlertException("A new trip cannot already have an ID", ENTITY_NAME, "idexists");
-        }
-        TripDTO result = null;//tripService.requestTrip(tripDTO);
+
+        TripDTO result =tripService.requestTrip(tripDTO.getDriverId(), tripDTO.getRiderId());
         return ResponseEntity.created(new URI("/api/trips/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
             .body(result);
