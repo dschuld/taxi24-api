@@ -85,6 +85,21 @@ public class TripService {
 
 
     /**
+     * Get all trips with specified status.
+     *
+     * @param pageable the pagination information
+     * @param status The trip status
+     * @return the list of entities
+     */
+    @Transactional(readOnly = true)
+    public Page<TripDTO> findTripsByStatus(Pageable pageable, TripStatus status) {
+        log.debug("Request to get all Trips");
+        return tripRepository.findByTripStatus(pageable, status)
+            .map(tripMapper::toDto);
+    }
+
+
+    /**
      * Get one trip by id.
      *
      * @param id the id of the entity
@@ -105,5 +120,61 @@ public class TripService {
     public void delete(Long id) {
         log.debug("Request to delete Trip : {}", id);
         tripRepository.deleteById(id);
+    }
+
+    /**
+     * Completes a trip. The trip has to be in status ACTIVE for being completed.
+     *
+     * @param tripId The trip ID
+     * @throws BadTripStatusException If the trip is not in status ACTIVE.
+     *
+     */
+    public TripDTO completeTrip(long tripId) {
+        TripStatus currentTripStatus = TripStatus.ACTIVE;
+        TripStatus newTripStatus = TripStatus.COMPLETED;
+
+        return updateTrip(tripId, currentTripStatus, newTripStatus);
+
+    }
+
+    /**
+     * Starts a trip. The trip has to be in status REQUESTED for being started.
+     *
+     * @param tripId The trip ID
+     * @throws BadTripStatusException If the trip is not in status REQUESTED.
+     *
+     */
+    public TripDTO startTrip(long tripId) {
+        TripStatus currentTripStatus = TripStatus.REQUESTED;
+        TripStatus newTripStatus = TripStatus.ACTIVE;
+
+        return updateTrip(tripId, currentTripStatus, newTripStatus);
+    }
+
+    /**
+     * Starts a trip. The trip has to be in status REQUSTED for being started.
+     *
+     * @param tripId The trip ID
+     * @throws BadTripStatusException If the trip is not in status REQUESTED.
+     *
+     */
+    public TripDTO cancelTrip(long tripId) {
+        TripStatus currentTripStatus = TripStatus.REQUESTED;
+        TripStatus newTripStatus = TripStatus.CANCELLED;
+
+        return updateTrip(tripId, currentTripStatus, newTripStatus);
+    }
+
+    private TripDTO updateTrip(long tripId, TripStatus currentTripStatus, TripStatus newTripStatus) {
+        Optional<Trip> trip = tripRepository.findById(tripId);
+        Trip updateTrip = trip.orElseThrow(() -> new NoSuchElementException("No trip with ID " + tripId + " found."));
+        if (!updateTrip.getTripStatus().equals(currentTripStatus)) {
+            throw new BadTripStatusException(tripId, updateTrip.getTripStatus());
+        }
+
+        updateTrip.setTripStatus(newTripStatus);
+        tripRepository.save(updateTrip);
+
+        return tripMapper.toDto(updateTrip);
     }
 }

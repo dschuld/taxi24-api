@@ -5,7 +5,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,6 +12,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 import rw.bk.taxi24.api.domain.Driver;
 import rw.bk.taxi24.api.domain.Rider;
+import rw.bk.taxi24.api.domain.Trip;
 import rw.bk.taxi24.api.domain.enumeration.DriverStatus;
 import rw.bk.taxi24.api.domain.enumeration.TripStatus;
 import rw.bk.taxi24.api.repository.DriverRepository;
@@ -23,6 +23,7 @@ import rw.bk.taxi24.api.service.mapper.TripMapper;
 
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.function.Function;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -106,5 +107,55 @@ public class TripServiceTest {
 
         service.requestTrip(driverId, riderId);
     }
+
+    @Test
+    public void completeTrip() {
+
+        updateTrip(TripStatus.ACTIVE,  TripStatus.COMPLETED, tripId -> service.completeTrip(tripId));
+    }
+
+
+    @Test(expected = BadTripStatusException.class)
+    public void invalidCompleteTrip() {
+
+        updateTrip(TripStatus.REQUESTED,  TripStatus.COMPLETED, tripId -> service.completeTrip(tripId));
+    }
+
+    @Test
+    public void startTrip() {
+        updateTrip(TripStatus.REQUESTED,  TripStatus.ACTIVE, tripId -> service.startTrip(tripId));
+    }
+
+    @Test(expected = BadTripStatusException.class)
+    public void invalidStartTrip() {
+
+        updateTrip(TripStatus.COMPLETED,  TripStatus.ACTIVE, tripId -> service.startTrip(tripId));
+    }
+
+    @Test
+    public void cancelTrip() {
+        updateTrip(TripStatus.REQUESTED,  TripStatus.CANCELLED, tripId -> service.cancelTrip(tripId));
+    }
+
+    @Test(expected = BadTripStatusException.class)
+    public void invalidCancelTrip() {
+
+        updateTrip(TripStatus.COMPLETED,  TripStatus.CANCELLED, tripId -> service.cancelTrip(tripId));
+    }
+
+    private void updateTrip(TripStatus currentStatus, TripStatus newStatus, Function<Long, TripDTO> function) {
+        long tripId = 1l;
+        Trip trip = new Trip();
+        trip.setId(tripId);
+        trip.driver(new Driver()).rider(new Rider()).tripStatus(currentStatus);
+
+        when(repository.findById(tripId)).thenReturn(Optional.of(trip));
+
+        function.apply(tripId);
+
+        verify(repository, times(1)).save(trip);
+        assertEquals(trip.getTripStatus(), newStatus);
+    }
+
 
 }
