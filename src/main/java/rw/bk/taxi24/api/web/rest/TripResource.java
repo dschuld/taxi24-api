@@ -1,6 +1,7 @@
 package rw.bk.taxi24.api.web.rest;
 
 import com.codahale.metrics.annotation.Timed;
+import org.springframework.data.domain.PageImpl;
 import rw.bk.taxi24.api.domain.enumeration.TripStatus;
 import rw.bk.taxi24.api.service.TripService;
 import rw.bk.taxi24.api.service.dto.TripRequestDTO;
@@ -25,6 +26,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * REST controller for managing Trip.
@@ -105,9 +107,9 @@ public class TripResource {
      */
     @GetMapping("/trips")
     @Timed
-    public ResponseEntity<List<TripDTO>> getAllTrips(Pageable pageable) {
+    public ResponseEntity<List<TripDTO>> getAllTrips(Pageable pageable, @RequestParam(value = "status", required = false) String status) {
         log.debug("REST request to get a page of Trips");
-        Page<TripDTO> page = tripService.findAll(pageable);
+        Page<TripDTO> page = new PageImpl<TripDTO>(tripService.findAll(pageable).filter(tripDTO -> status != null? tripDTO.getTripStatus().toString().toLowerCase().equals(status.toLowerCase()) : true).stream().collect(Collectors.toList()));
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/trips");
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }
