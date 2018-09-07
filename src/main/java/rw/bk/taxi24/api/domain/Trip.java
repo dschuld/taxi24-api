@@ -1,12 +1,11 @@
 package rw.bk.taxi24.api.domain;
 
 
-import javax.persistence.*;
+import rw.bk.taxi24.api.domain.enumeration.TripStatus;
 
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Objects;
-
-import rw.bk.taxi24.api.domain.enumeration.TripStatus;
 
 /**
  * A Trip.

@@ -70,33 +70,30 @@ public class TripResource {
      * or with status 500 (Internal Server Error) if the tripDTO couldn't be updated
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
-    @PatchMapping("/trips")
+    @PatchMapping("/trips/{id}")
     @Timed
-    public ResponseEntity<TripDTO> updateTrip(@RequestBody TripUpdateDTO tripUpdateDTO) throws URISyntaxException {
+    public ResponseEntity<TripDTO> updateTrip(@RequestBody TripUpdateDTO tripUpdateDTO, @PathVariable Long id) throws URISyntaxException {
         log.debug("REST request to update Trip : {}", tripUpdateDTO);
-        if (tripUpdateDTO.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
-        }
 
         TripDTO tripDTO;
 
         switch (tripUpdateDTO.getNewStatus().toLowerCase()) {
 
             case "active":
-                tripDTO = tripService.startTrip(tripUpdateDTO.getId());
+                tripDTO = tripService.startTrip(id);
                 break;
             case "cancelled":
-                tripDTO = tripService.cancelTrip(tripUpdateDTO.getId());
+                tripDTO = tripService.cancelTrip(id);
                 break;
             case "completed":
-                tripDTO = tripService.completeTrip(tripUpdateDTO.getId());
+                tripDTO = tripService.completeTrip(id);
                 break;
             default:
                 throw new BadRequestAlertException(tripUpdateDTO.getNewStatus().toLowerCase() + " is not a valid status", "Trip", "badStatus");
         }
 
         return ResponseEntity.ok()
-            .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, tripUpdateDTO.getId().toString()))
+            .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, id.toString()))
             .body(tripDTO);
     }
 

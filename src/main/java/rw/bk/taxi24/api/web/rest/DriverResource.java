@@ -85,7 +85,12 @@ public class DriverResource {
     }
 
     /**
-     * GET  /drivers : get all the drivers.
+     * GET  /drivers : get all the drivers. Valid query parameters are<br>
+     * <li>status : Get drivers with the given status. Currently, only AVAILABLE is valid.</li>
+     * <li>latitude/longitude : Get drivers in a certain radius around the given point.</li>
+     * <li>radius : Get drivers with the given radius in km. Must be used with latitude/longitude. When omitted, defaults to 3.</li>
+     * <li>riderId : Find the 3 drivers closest to the rider with the given ID.</li>
+     *
      *
      * @param pageable the pagination information
      * @return the ResponseEntity with status 200 (OK) and the list of drivers in body

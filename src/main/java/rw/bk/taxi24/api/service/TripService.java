@@ -23,7 +23,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 /**
- * Service Implementation for managing Trip.
+ * Service Implementation for managing Trips.
  */
 @Service
 @Transactional
@@ -161,7 +161,7 @@ public class TripService {
     }
 
     /**
-     * Starts a trip. The trip has to be in status REQUSTED for being started.
+     * Cancels a trip. The trip has to be in status REQUSTED for being cancelled.
      *
      * @param tripId The trip ID
      * @throws BadTripStatusException If the trip is not in status REQUESTED.

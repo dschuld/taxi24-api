@@ -247,10 +247,9 @@ public class TripResourceIntTest {
         int databaseSizeBeforeUpdate = tripRepository.findAll().size();
 
         TripUpdateDTO tripDTO = new TripUpdateDTO();
-        tripDTO.setId(trip.getId());
         tripDTO.setNewStatus(requestParam);
 
-        restTripMockMvc.perform(patch("/api/trips")
+        restTripMockMvc.perform(patch("/api/trips/" + trip.getId())
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
             .content(TestUtil.convertObjectToJsonBytes(tripDTO)))
             .andExpect(status().isOk());
@@ -276,10 +275,9 @@ public class TripResourceIntTest {
         em.detach(updatedTrip);
         updatedTrip.tripStatus(TripStatus.REQUESTED);
         TripUpdateDTO tripDTO = new TripUpdateDTO();
-        tripDTO.setId(trip.getId());
         tripDTO.setNewStatus("completed");
 
-        restTripMockMvc.perform(patch("/api/trips")
+        restTripMockMvc.perform(patch("/api/trips/" + trip.getId())
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
             .content(TestUtil.convertObjectToJsonBytes(tripDTO)))
             .andExpect(status().isBadRequest());
@@ -299,11 +297,10 @@ public class TripResourceIntTest {
         // Create the Trip
         TripDTO tripDTO = tripMapper.toDto(trip);
         TripUpdateDTO tripUpdateDTO = new TripUpdateDTO();
-        tripUpdateDTO.setId(999l);
         tripUpdateDTO.setNewStatus("completed");
 
         // If the entity doesn't have an ID, it will be created instead of just being updated
-        restTripMockMvc.perform(patch("/api/trips")
+        restTripMockMvc.perform(patch("/api/trips/" + 12345)
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
             .content(TestUtil.convertObjectToJsonBytes(tripUpdateDTO)))
             .andExpect(status().isNotFound());

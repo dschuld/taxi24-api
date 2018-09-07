@@ -1,8 +1,12 @@
 package rw.bk.taxi24.api.service;
 
-import javafx.collections.transformation.SortedList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import rw.bk.taxi24.api.domain.Driver;
 import rw.bk.taxi24.api.domain.Rider;
 import rw.bk.taxi24.api.domain.enumeration.DriverStatus;
@@ -10,14 +14,6 @@ import rw.bk.taxi24.api.repository.DriverRepository;
 import rw.bk.taxi24.api.repository.RiderRepository;
 import rw.bk.taxi24.api.service.dto.DriverDTO;
 import rw.bk.taxi24.api.service.mapper.DriverMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -71,6 +67,12 @@ public class DriverService {
     }
 
 
+    /**
+     * Get all available drivers.
+     *
+     * @param pageable the pagination information
+     * @return the list of available drivers
+     */
     @Transactional(readOnly = true)
     public Page<DriverDTO> findAllAvailableDrivers(Pageable pageable) {
         log.debug("Request to get all available Drivers");
@@ -102,6 +104,15 @@ public class DriverService {
         driverRepository.deleteById(id);
     }
 
+    /**
+     * Get all available drivers within the given radius of the given coordinates.
+     *
+     * @param pageable the pagination information
+     * @param latitude Longitude of the point
+     * @param longitude Latitude of the point
+     * @param radius Radius
+     * @return the list of available drivers
+     */
     public Page<DriverDTO> findAvailableDriversWithinRadius(Pageable pageable, double latitude, double longitude, double radius) {
         log.debug("Request to get all available Drivers within " + radius + "km radius");
         Predicate<Driver> radiusFilter = driver -> ServiceUtils.kilometersBetweenCoordinates(latitude, longitude, driver.getLatitude(), driver.getLongitude()) < radius;
@@ -109,6 +120,13 @@ public class DriverService {
         return new PageImpl<Driver>(byStatus.stream().filter(radiusFilter).collect(Collectors.toList())).map(driverMapper::toDto);
     }
 
+    /**
+     * Finds the drivers closest to the rider with the given ID
+     * @param pageable  the pagination information
+     * @param riderId
+     * @param numRiders How many riders should be returned
+     * @return the list of available closest drivers
+     */
     public Page<DriverDTO> findClosestDriversForRider(Pageable pageable, long riderId, int numRiders) {
         log.debug("Request to get " + numRiders + " closest available Drivers for Rider " + riderId);
         Rider rider = riderRepository.findById(riderId).orElseThrow(() -> new NoSuchElementException("Rider with ID " + riderId + " not found"));

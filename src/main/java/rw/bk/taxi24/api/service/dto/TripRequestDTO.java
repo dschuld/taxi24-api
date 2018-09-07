@@ -1,5 +1,8 @@
 package rw.bk.taxi24.api.service.dto;
 
+/**
+ * A DTO for a trip request.
+ */
 public class TripRequestDTO {
 
     private long driverId;

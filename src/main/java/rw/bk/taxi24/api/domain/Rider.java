@@ -3,7 +3,6 @@ package rw.bk.taxi24.api.domain;
 import io.swagger.annotations.ApiModel;
 
 import javax.persistence.*;
-
 import java.io.Serializable;
 import java.util.Objects;
 

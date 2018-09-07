@@ -5,7 +5,6 @@ import io.swagger.annotations.ApiModelProperty;
 import rw.bk.taxi24.api.domain.enumeration.DriverStatus;
 
 import javax.persistence.*;
-
 import java.io.Serializable;
 import java.util.Objects;
 
