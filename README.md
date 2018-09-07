@@ -93,8 +93,9 @@ The application provides 3 domain endpoints:
         
     - DELETE /riders/{id} deletes a rider
     - PUT /riders/{id} updates an existing rider.
+    
 - taxi24api/api/trips
-    - GET /trips request to get a list of trip
+    - GET /trips request to get a list of trip. Can be used with query parameter status (values "requested", "active", "cancelled", "completed") to get a list of all trips with the respective status.
     - GET /trips/{id} to get a specific trip
     - POST /trips to create a trip. The rider and driver specified by the request must exist in the database. The body must have a payload in the following format:
     
