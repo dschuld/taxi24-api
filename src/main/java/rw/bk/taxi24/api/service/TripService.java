@@ -134,7 +134,14 @@ public class TripService {
         TripStatus newTripStatus = TripStatus.COMPLETED;
 
         TripDTO tripDTO = updateTrip(tripId, currentTripStatus, newTripStatus);
+        Rider rider = tripRepository.findById(tripId).get().getRider();
+        if (rider.getAmountRides() == null) {
+            rider.setAmountRides(1);
+        } else {
+            rider.setAmountRides(rider.getAmountRides() + 1);
+        }
 
+        riderRepository.saveAndFlush(rider);
         return tripDTO;
 
     }

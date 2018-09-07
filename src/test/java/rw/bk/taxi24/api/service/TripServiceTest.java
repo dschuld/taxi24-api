@@ -121,6 +121,7 @@ public class TripServiceTest {
     public void completeTrip() {
 
         updateTrip(TripStatus.ACTIVE, TripStatus.COMPLETED, tripId -> service.completeTrip(tripId));
+        verify(riderRepository, times(1)).saveAndFlush(any());
     }
 
 
