@@ -60,7 +60,7 @@ The application provides 3 domain endpoints:
 - taxi24api/api/driver
     - GET /driver request to get a list of drivers. This request can contain following query parameters:
         - <i>status</i>    Currently the only allowed value is "available". Retrieves a list of all available drivers.
-        - <i>rlongitude/latitude</i>     Specifies a location in coordinats. Both values must be given. All AVAILABLE drivers in a certain radius around this location are returned. Since the status is AVAILABLE by default, it can be omitted here.
+        - <i>longitude/latitude</i>     Specifies a location in coordinats. Both values must be given. All AVAILABLE drivers in a certain radius around this location are returned. Since the status is AVAILABLE by default, it can be omitted here.
         - <i>radius</i>     Specifies the radius in km around the previously mentioned location. If not given, defaults to 3km.
         - <i>riderId</i> Retrieves a list of the 3 drivers closest to the position of the rider with the given ID.
     - GET /driver/{id} to get a specific driver
