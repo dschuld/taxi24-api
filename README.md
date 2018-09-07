@@ -58,7 +58,11 @@ The following 3 CREATE TABLE statements show the data model for the Driver, Ride
 The application provides 3 domain endpoints:
 
 - taxi24api/api/driver
-    - GET /driver request to get a list of drivers
+    - GET /driver request to get a list of drivers. This request can contain following query parameters:
+        - <i>status</i>    Currently the only allowed value is "available". Retrieves a list of all available drivers.
+        - <i>rlongitude/latitude</i>     Specifies a location in coordinats. Both values must be given. All AVAILABLE drivers in a certain radius around this location are returned. Since the status is AVAILABLE by default, it can be omitted here.
+        - <i>radius</i>     Specifies the radius in km around the previously mentioned location. If not given, defaults to 3km.
+        - <i>riderId</i> Retrieves a list of the 3 drivers closest to the position of the rider with the given ID.
     - GET /driver/{id} to get a specific driver
     - POST /driver to create a driver. The body must have a payload in the following format and the status must be either AVAILABLE, OCCUPIED or UNAVAILABLE (note the all caps letters):
     
@@ -112,15 +116,21 @@ The application provides 3 domain endpoints:
     - DELETE /trips/{id} deletes a trip
 
 
-- JHipster endpoints
+
+
+Additionally, JHipster applications provide non-domain endpoints for management and information:
+
+- taxi24api/management/info
+- taxi24api/management/health
+- taxi24api/swagger-resources/
 
 ## Testing
 
-To launch your application's tests, run:
+To launch the application's tests, run:
 
     ./mvnw clean test
 
-
+Unit and integration tests are implemented in src/test/java. Additionally, performance test can be implemented with [Gatling](Gatling.io), they have been skipped here due to time constraints.
 
 
 
