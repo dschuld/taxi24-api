@@ -1,8 +1,10 @@
 package rw.bk.taxi24.api.web.rest;
 
 import com.codahale.metrics.annotation.Timed;
+import rw.bk.taxi24.api.domain.enumeration.TripStatus;
 import rw.bk.taxi24.api.service.TripService;
 import rw.bk.taxi24.api.service.dto.TripRequestDTO;
+import rw.bk.taxi24.api.service.dto.TripUpdateDTO;
 import rw.bk.taxi24.api.web.rest.errors.BadRequestAlertException;
 import rw.bk.taxi24.api.web.rest.util.HeaderUtil;
 import rw.bk.taxi24.api.web.rest.util.PaginationUtil;
@@ -21,6 +23,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 /**
@@ -52,7 +55,7 @@ public class TripResource {
     public ResponseEntity<TripDTO> createTrip(@RequestBody TripRequestDTO tripDTO) throws URISyntaxException {
         log.debug("REST request to requestTrip Trip : {}", tripDTO);
 
-        TripDTO result =tripService.requestTrip(tripDTO.getDriverId(), tripDTO.getRiderId());
+        TripDTO result = tripService.requestTrip(tripDTO.getDriverId(), tripDTO.getRiderId());
         return ResponseEntity.created(new URI("/api/trips/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
             .body(result);
@@ -61,23 +64,40 @@ public class TripResource {
     /**
      * PUT  /trips : Updates an existing trip.
      *
-     * @param tripDTO the tripDTO to update
+     * @param tripUpdateDTO the tripDTO to update
      * @return the ResponseEntity with status 200 (OK) and with body the updated tripDTO,
      * or with status 400 (Bad Request) if the tripDTO is not valid,
      * or with status 500 (Internal Server Error) if the tripDTO couldn't be updated
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
-    @PutMapping("/trips")
+    @PatchMapping("/trips")
     @Timed
-    public ResponseEntity<TripDTO> updateTrip(@RequestBody TripDTO tripDTO) throws URISyntaxException {
-        log.debug("REST request to update Trip : {}", tripDTO);
-        if (tripDTO.getId() == null) {
+    public ResponseEntity<TripDTO> updateTrip(@RequestBody TripUpdateDTO tripUpdateDTO) throws URISyntaxException {
+        log.debug("REST request to update Trip : {}", tripUpdateDTO);
+        if (tripUpdateDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
-        TripDTO result = null;//tripService.requestTrip(tripDTO);
+
+        TripDTO tripDTO;
+
+        switch (tripUpdateDTO.getNewStatus().toLowerCase()) {
+
+            case "active":
+                tripDTO = tripService.startTrip(tripUpdateDTO.getId());
+                break;
+            case "cancelled":
+                tripDTO = tripService.cancelTrip(tripUpdateDTO.getId());
+                break;
+            case "completed":
+                tripDTO = tripService.completeTrip(tripUpdateDTO.getId());
+                break;
+            default:
+                throw new BadRequestAlertException(tripUpdateDTO.getNewStatus().toLowerCase() + " is not a valid status", "Trip", "badStatus");
+        }
+
         return ResponseEntity.ok()
-            .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, tripDTO.getId().toString()))
-            .body(result);
+            .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, tripUpdateDTO.getId().toString()))
+            .body(tripDTO);
     }
 
     /**
@@ -109,17 +129,4 @@ public class TripResource {
         return ResponseUtil.wrapOrNotFound(tripDTO);
     }
 
-    /**
-     * DELETE  /trips/:id : delete the "id" trip.
-     *
-     * @param id the id of the tripDTO to delete
-     * @return the ResponseEntity with status 200 (OK)
-     */
-    @DeleteMapping("/trips/{id}")
-    @Timed
-    public ResponseEntity<Void> deleteTrip(@PathVariable Long id) {
-        log.debug("REST request to delete Trip : {}", id);
-        tripService.delete(id);
-        return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id.toString())).build();
-    }
 }

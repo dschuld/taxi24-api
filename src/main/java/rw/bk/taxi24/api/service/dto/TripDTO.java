@@ -14,9 +14,9 @@ public class TripDTO implements Serializable {
 
     private Long id;
 
-    private Driver driver;
+    private DriverDTO driver;
 
-    private Rider rider;
+    private RiderDTO rider;
 
     private TripStatus tripStatus;
 
@@ -32,19 +32,19 @@ public class TripDTO implements Serializable {
         this.id = id;
     }
 
-    public Driver getDriver() {
+    public DriverDTO getDriver() {
         return driver;
     }
 
-    public void setDriver(Driver driver) {
+    public void setDriver(DriverDTO driver) {
         this.driver = driver;
     }
 
-    public Rider getRider() {
+    public RiderDTO getRider() {
         return rider;
     }
 
-    public void setRider(Rider rider) {
+    public void setRider(RiderDTO rider) {
         this.rider = rider;
     }
 

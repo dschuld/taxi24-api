@@ -1,5 +1,7 @@
 package rw.bk.taxi24.api.web.rest.errors;
 
+import rw.bk.taxi24.api.service.BadTripStatusException;
+import rw.bk.taxi24.api.service.DriverNotAvailableException;
 import rw.bk.taxi24.api.web.rest.util.HeaderUtil;
 
 import org.springframework.dao.ConcurrencyFailureException;
@@ -88,6 +90,24 @@ public class ExceptionTranslator implements ProblemHandling {
         Problem problem = Problem.builder()
             .withStatus(Status.NOT_FOUND)
             .with("message", ErrorConstants.ENTITY_NOT_FOUND_TYPE)
+            .build();
+        return create(ex, problem, request);
+    }
+
+    @ExceptionHandler(BadTripStatusException.class)
+    public ResponseEntity<Problem> handleBadTripStatusException(BadTripStatusException ex, NativeWebRequest request) {
+        Problem problem = Problem.builder()
+            .withStatus(Status.BAD_REQUEST)
+            .with("message", ErrorConstants.INVALID_STATUS)
+            .build();
+        return create(ex, problem, request);
+    }
+
+    @ExceptionHandler(DriverNotAvailableException.class)
+    public ResponseEntity<Problem> handleDriverNotAvailableException(DriverNotAvailableException ex, NativeWebRequest request) {
+        Problem problem = Problem.builder()
+            .withStatus(Status.BAD_REQUEST)
+            .with("message", ErrorConstants.DRIVER_NOT_AVAILABLE)
             .build();
         return create(ex, problem, request);
     }

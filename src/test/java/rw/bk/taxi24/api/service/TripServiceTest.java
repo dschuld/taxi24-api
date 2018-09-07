@@ -18,7 +18,11 @@ import rw.bk.taxi24.api.domain.enumeration.TripStatus;
 import rw.bk.taxi24.api.repository.DriverRepository;
 import rw.bk.taxi24.api.repository.RiderRepository;
 import rw.bk.taxi24.api.repository.TripRepository;
+import rw.bk.taxi24.api.service.dto.DriverDTO;
+import rw.bk.taxi24.api.service.dto.RiderDTO;
 import rw.bk.taxi24.api.service.dto.TripDTO;
+import rw.bk.taxi24.api.service.mapper.DriverMapperImpl;
+import rw.bk.taxi24.api.service.mapper.RiderMapperImpl;
 import rw.bk.taxi24.api.service.mapper.TripMapper;
 
 import java.util.NoSuchElementException;
@@ -59,10 +63,15 @@ public class TripServiceTest {
 
         long driverId = 11l;
         long riderId = 7l;
+
         Driver driver = new Driver().name("theDriver").status(DriverStatus.AVAILABLE);
         driver.setId(driverId);
+        DriverDTO driverDTO = new DriverMapperImpl().toDto(driver);
+        driverDTO.setId(driverId);
         Rider rider = new Rider().name("rheRider");
         rider.setId(riderId);
+        RiderDTO riderDTO = new RiderMapperImpl().toDto(rider);
+        riderDTO.setId(riderId);
         when(driverRepository.findById(driverId)).thenReturn(Optional.of(driver));
         when(riderRepository.findById(riderId)).thenReturn(Optional.of(rider));
         when(repository.save(any())).thenAnswer((Answer) invocation -> invocation.getArguments()[0]);
@@ -71,9 +80,9 @@ public class TripServiceTest {
 
         verify(driverRepository, times(1)).findById(driverId);
         verify(riderRepository, times(1)).findById(riderId);
-        assertEquals(tripDTO.getTripStatus(), TripStatus.REQUESTED);
-        assertEquals(tripDTO.getDriver(), driver);
-        assertEquals(tripDTO.getRider(), rider);
+        assertEquals(TripStatus.REQUESTED, tripDTO.getTripStatus());
+        assertEquals(driverDTO, tripDTO.getDriver());
+        assertEquals(riderDTO, tripDTO.getRider());
 
     }
 
@@ -111,36 +120,36 @@ public class TripServiceTest {
     @Test
     public void completeTrip() {
 
-        updateTrip(TripStatus.ACTIVE,  TripStatus.COMPLETED, tripId -> service.completeTrip(tripId));
+        updateTrip(TripStatus.ACTIVE, TripStatus.COMPLETED, tripId -> service.completeTrip(tripId));
     }
 
 
     @Test(expected = BadTripStatusException.class)
     public void invalidCompleteTrip() {
 
-        updateTrip(TripStatus.REQUESTED,  TripStatus.COMPLETED, tripId -> service.completeTrip(tripId));
+        updateTrip(TripStatus.REQUESTED, TripStatus.COMPLETED, tripId -> service.completeTrip(tripId));
     }
 
     @Test
     public void startTrip() {
-        updateTrip(TripStatus.REQUESTED,  TripStatus.ACTIVE, tripId -> service.startTrip(tripId));
+        updateTrip(TripStatus.REQUESTED, TripStatus.ACTIVE, tripId -> service.startTrip(tripId));
     }
 
     @Test(expected = BadTripStatusException.class)
     public void invalidStartTrip() {
 
-        updateTrip(TripStatus.COMPLETED,  TripStatus.ACTIVE, tripId -> service.startTrip(tripId));
+        updateTrip(TripStatus.COMPLETED, TripStatus.ACTIVE, tripId -> service.startTrip(tripId));
     }
 
     @Test
     public void cancelTrip() {
-        updateTrip(TripStatus.REQUESTED,  TripStatus.CANCELLED, tripId -> service.cancelTrip(tripId));
+        updateTrip(TripStatus.REQUESTED, TripStatus.CANCELLED, tripId -> service.cancelTrip(tripId));
     }
 
     @Test(expected = BadTripStatusException.class)
     public void invalidCancelTrip() {
 
-        updateTrip(TripStatus.COMPLETED,  TripStatus.CANCELLED, tripId -> service.cancelTrip(tripId));
+        updateTrip(TripStatus.COMPLETED, TripStatus.CANCELLED, tripId -> service.cancelTrip(tripId));
     }
 
     private void updateTrip(TripStatus currentStatus, TripStatus newStatus, Function<Long, TripDTO> function) {

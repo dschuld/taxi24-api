@@ -13,6 +13,7 @@ import rw.bk.taxi24.api.repository.TripRepository;
 import rw.bk.taxi24.api.service.TripService;
 import rw.bk.taxi24.api.service.dto.TripDTO;
 import rw.bk.taxi24.api.service.dto.TripRequestDTO;
+import rw.bk.taxi24.api.service.dto.TripUpdateDTO;
 import rw.bk.taxi24.api.service.mapper.TripMapper;
 import rw.bk.taxi24.api.web.rest.errors.ExceptionTranslator;
 
@@ -34,9 +35,10 @@ import javax.persistence.EntityManager;
 import java.util.List;
 
 
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static rw.bk.taxi24.api.web.rest.TestUtil.createFormattingConversionService;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -115,7 +117,7 @@ public class TripResourceIntTest {
             .setMessageConverters(jacksonMessageConverter).build();
 
         availableDriver = new Driver().status(DriverStatus.AVAILABLE).latitude(1.1f).latitude(2.2f).name("AvailableDriver");
-        occupiedDriver = new Driver().status(DriverStatus.OCCUPIED).latitude(1.1f).latitude(2.2f).name("AvailableDriver");
+        occupiedDriver = new Driver().status(DriverStatus.OCCUPIED).latitude(1.1f).latitude(2.2f).name("OccupiedDriver");
         rider = new Rider().name("TheRider").amountRides(0);
         driverRepository.save(availableDriver);
         driverRepository.save(occupiedDriver);
@@ -146,6 +148,26 @@ public class TripResourceIntTest {
         assertThat(testTrip.getTripStatus()).isEqualTo(DEFAULT_TRIP_STATUS);
     }
 
+    @Test
+    @Transactional
+    public void requestTripWithOccupiedDriver() throws Exception {
+        int databaseSizeBeforeCreate = tripRepository.findAll().size();
+
+        Driver driver = driverRepository.findByStatus(DriverStatus.OCCUPIED).get(0);
+        Rider rider = riderRepository.findAll().get(0);
+
+        // Create the Trip
+        TripRequestDTO tripRequestDTO = new TripRequestDTO(driver.getId(), rider.getId());
+        restTripMockMvc.perform(post("/api/trips")
+            .contentType(TestUtil.APPLICATION_JSON_UTF8)
+            .content(TestUtil.convertObjectToJsonBytes(tripRequestDTO)))
+            .andExpect(status().isBadRequest());
+
+        // Validate the Trip in the database
+        List<Trip> tripList = tripRepository.findAll();
+        assertThat(tripList).hasSize(databaseSizeBeforeCreate);
+    }
+
 
     @Test
     @Transactional
@@ -161,10 +183,9 @@ public class TripResourceIntTest {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(trip.getId().intValue())))
-            .andExpect(jsonPath("$.[*].driverId").value(hasItem(availableDriver.getId())))
-            .andExpect(jsonPath("$.[*].driverId").value(hasItem(availableDriver.getId())))
-            .andExpect(jsonPath("$.[*].riderId").value(hasItem(occupiedDriver.getId())))
-            .andExpect(jsonPath("$.[*].riderId").value(hasItem(rider.getId())))
+            .andExpect(jsonPath("$.[*].driver.id").value(hasItem(availableDriver.getId().intValue())))
+            .andExpect(jsonPath("$.[*].driver.id").value(hasItem(occupiedDriver.getId().intValue())))
+            .andExpect(jsonPath("$.[*].rider.id").value(hasItem(rider.getId().intValue())))
             .andExpect(jsonPath("$.[*].tripStatus").value(hasItem(DEFAULT_TRIP_STATUS.toString())));
     }
 
@@ -172,7 +193,7 @@ public class TripResourceIntTest {
     @Test
     @Transactional
     public void getTrip() throws Exception {
-        // Initialize the database
+        Trip trip = new Trip().tripStatus(TripStatus.REQUESTED).driver(availableDriver).rider(rider);
         tripRepository.saveAndFlush(trip);
 
         // Get the trip
@@ -180,11 +201,9 @@ public class TripResourceIntTest {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.id").value(trip.getId().intValue()))
-            .andExpect(jsonPath("$.driverId").value(DEFAULT_DRIVER_ID))
-            .andExpect(jsonPath("$.riderId").value(DEFAULT_RIDER_ID))
-            .andExpect(jsonPath("$.tripStatus").value(DEFAULT_TRIP_STATUS.toString()))
-            .andExpect(jsonPath("$.duration").value(DEFAULT_DURATION.doubleValue()))
-            .andExpect(jsonPath("$.distance").value(DEFAULT_DISTANCE.doubleValue()));
+            .andExpect(jsonPath("$.driver.id").value(availableDriver.getId().intValue()))
+            .andExpect(jsonPath("$.rider.id").value(rider.getId().intValue()))
+            .andExpect(jsonPath("$.tripStatus").value(TripStatus.REQUESTED.toString()));
     }
     @Test
     @Transactional
@@ -196,25 +215,42 @@ public class TripResourceIntTest {
 
     @Test
     @Transactional
-    public void updateTrip() throws Exception {
-        // Initialize the database
+    public void completeTrip() throws Exception {
+        TripStatus newStatus = TripStatus.COMPLETED;
+        TripStatus currentStatus = TripStatus.ACTIVE;
+        String requestParam = "completed";
+        updateTrip(newStatus, currentStatus, requestParam);
+    }
+
+    @Test
+    @Transactional
+    public void cancelTrip() throws Exception {
+        TripStatus newStatus = TripStatus.CANCELLED;
+        TripStatus currentStatus = TripStatus.REQUESTED;
+        String requestParam = "cancelled";
+        updateTrip(newStatus, currentStatus, requestParam);
+    }
+
+    @Test
+    @Transactional
+    public void startTrip() throws Exception {
+        TripStatus newStatus = TripStatus.ACTIVE;
+        TripStatus currentStatus = TripStatus.REQUESTED;
+        String requestParam = "active";
+        updateTrip(newStatus, currentStatus, requestParam);
+    }
+
+    private void updateTrip(TripStatus newStatus, TripStatus currentStatus, String requestParam) throws Exception {
+        Trip trip = new Trip().tripStatus(currentStatus).driver(availableDriver).rider(rider);
         tripRepository.saveAndFlush(trip);
 
         int databaseSizeBeforeUpdate = tripRepository.findAll().size();
 
-        // Update the trip
-        Trip updatedTrip = tripRepository.findById(trip.getId()).get();
-        // Disconnect from session so that the updates on updatedTrip are not directly saved in db
-        em.detach(updatedTrip);
-        updatedTrip
-//            .driverId(UPDATED_DRIVER_ID)
-//            .riderId(UPDATED_RIDER_ID)
-            .tripStatus(UPDATED_TRIP_STATUS)
-            .duration(UPDATED_DURATION)
-            .distance(UPDATED_DISTANCE);
-        TripDTO tripDTO = tripMapper.toDto(updatedTrip);
+        TripUpdateDTO tripDTO = new TripUpdateDTO();
+        tripDTO.setId(trip.getId());
+        tripDTO.setNewStatus(requestParam);
 
-        restTripMockMvc.perform(put("/api/trips")
+        restTripMockMvc.perform(patch("/api/trips")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
             .content(TestUtil.convertObjectToJsonBytes(tripDTO)))
             .andExpect(status().isOk());
@@ -223,11 +259,36 @@ public class TripResourceIntTest {
         List<Trip> tripList = tripRepository.findAll();
         assertThat(tripList).hasSize(databaseSizeBeforeUpdate);
         Trip testTrip = tripList.get(tripList.size() - 1);
-//        assertThat(testTrip.getDriverId()).isEqualTo(UPDATED_DRIVER_ID);
-//        assertThat(testTrip.getRiderId()).isEqualTo(UPDATED_RIDER_ID);
-        assertThat(testTrip.getTripStatus()).isEqualTo(UPDATED_TRIP_STATUS);
-        assertThat(testTrip.getDuration()).isEqualTo(UPDATED_DURATION);
-        assertThat(testTrip.getDistance()).isEqualTo(UPDATED_DISTANCE);
+        assertThat(testTrip.getTripStatus()).isEqualTo(newStatus);
+    }
+
+    @Test
+    @Transactional
+    public void updateTripWithInvalidStatus() throws Exception {
+        Trip trip = new Trip().tripStatus(TripStatus.REQUESTED).driver(availableDriver).rider(rider);
+        tripRepository.saveAndFlush(trip);
+
+        int databaseSizeBeforeUpdate = tripRepository.findAll().size();
+
+        // Update the trip
+        Trip updatedTrip = tripRepository.findById(trip.getId()).get();
+        // Disconnect from session so that the updates on updatedTrip are not directly saved in db
+        em.detach(updatedTrip);
+        updatedTrip.tripStatus(TripStatus.REQUESTED);
+        TripUpdateDTO tripDTO = new TripUpdateDTO();
+        tripDTO.setId(trip.getId());
+        tripDTO.setNewStatus("completed");
+
+        restTripMockMvc.perform(patch("/api/trips")
+            .contentType(TestUtil.APPLICATION_JSON_UTF8)
+            .content(TestUtil.convertObjectToJsonBytes(tripDTO)))
+            .andExpect(status().isBadRequest());
+
+        // Validate the Trip in the database
+        List<Trip> tripList = tripRepository.findAll();
+        assertThat(tripList).hasSize(databaseSizeBeforeUpdate);
+        Trip testTrip = tripList.get(tripList.size() - 1);
+        assertThat(testTrip.getTripStatus()).isEqualTo(TripStatus.REQUESTED);
     }
 
     @Test
@@ -237,65 +298,19 @@ public class TripResourceIntTest {
 
         // Create the Trip
         TripDTO tripDTO = tripMapper.toDto(trip);
+        TripUpdateDTO tripUpdateDTO = new TripUpdateDTO();
+        tripUpdateDTO.setId(999l);
+        tripUpdateDTO.setNewStatus("completed");
 
         // If the entity doesn't have an ID, it will be created instead of just being updated
-        restTripMockMvc.perform(put("/api/trips")
+        restTripMockMvc.perform(patch("/api/trips")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(tripDTO)))
-            .andExpect(status().isBadRequest());
+            .content(TestUtil.convertObjectToJsonBytes(tripUpdateDTO)))
+            .andExpect(status().isNotFound());
 
         // Validate the Trip in the database
         List<Trip> tripList = tripRepository.findAll();
         assertThat(tripList).hasSize(databaseSizeBeforeUpdate);
-    }
-
-    @Test
-    @Transactional
-    public void deleteTrip() throws Exception {
-        // Initialize the database
-        tripRepository.saveAndFlush(trip);
-
-        int databaseSizeBeforeDelete = tripRepository.findAll().size();
-
-        // Get the trip
-        restTripMockMvc.perform(delete("/api/trips/{id}", trip.getId())
-            .accept(TestUtil.APPLICATION_JSON_UTF8))
-            .andExpect(status().isOk());
-
-        // Validate the database is empty
-        List<Trip> tripList = tripRepository.findAll();
-        assertThat(tripList).hasSize(databaseSizeBeforeDelete - 1);
-    }
-
-    @Test
-    @Transactional
-    public void equalsVerifier() throws Exception {
-        TestUtil.equalsVerifier(Trip.class);
-        Trip trip1 = new Trip();
-        trip1.setId(1L);
-        Trip trip2 = new Trip();
-        trip2.setId(trip1.getId());
-        assertThat(trip1).isEqualTo(trip2);
-        trip2.setId(2L);
-        assertThat(trip1).isNotEqualTo(trip2);
-        trip1.setId(null);
-        assertThat(trip1).isNotEqualTo(trip2);
-    }
-
-    @Test
-    @Transactional
-    public void dtoEqualsVerifier() throws Exception {
-        TestUtil.equalsVerifier(TripDTO.class);
-        TripDTO tripDTO1 = new TripDTO();
-        tripDTO1.setId(1L);
-        TripDTO tripDTO2 = new TripDTO();
-        assertThat(tripDTO1).isNotEqualTo(tripDTO2);
-        tripDTO2.setId(tripDTO1.getId());
-        assertThat(tripDTO1).isEqualTo(tripDTO2);
-        tripDTO2.setId(2L);
-        assertThat(tripDTO1).isNotEqualTo(tripDTO2);
-        tripDTO1.setId(null);
-        assertThat(tripDTO1).isNotEqualTo(tripDTO2);
     }
 
     @Test

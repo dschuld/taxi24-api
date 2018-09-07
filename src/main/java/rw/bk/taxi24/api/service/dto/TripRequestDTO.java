@@ -4,6 +4,8 @@ public class TripRequestDTO {
 
     private long driverId;
 
+    private long riderId;
+
     public TripRequestDTO() {
         //empty default
     }
@@ -21,7 +23,6 @@ public class TripRequestDTO {
         this.riderId = riderId;
     }
 
-    private long riderId;
 
     public long getDriverId() {
         return driverId;
