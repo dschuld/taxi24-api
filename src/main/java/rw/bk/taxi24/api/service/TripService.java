@@ -133,7 +133,9 @@ public class TripService {
         TripStatus currentTripStatus = TripStatus.ACTIVE;
         TripStatus newTripStatus = TripStatus.COMPLETED;
 
-        return updateTrip(tripId, currentTripStatus, newTripStatus);
+        TripDTO tripDTO = updateTrip(tripId, currentTripStatus, newTripStatus);
+
+        return tripDTO;
 
     }
 

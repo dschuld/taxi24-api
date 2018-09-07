@@ -3,8 +3,10 @@ package rw.bk.taxi24.api.web.rest;
 import rw.bk.taxi24.api.Taxi24ApiApp;
 
 import rw.bk.taxi24.api.domain.Driver;
+import rw.bk.taxi24.api.domain.Rider;
 import rw.bk.taxi24.api.domain.enumeration.DriverStatus;
 import rw.bk.taxi24.api.repository.DriverRepository;
+import rw.bk.taxi24.api.repository.RiderRepository;
 import rw.bk.taxi24.api.service.DriverService;
 import rw.bk.taxi24.api.service.dto.DriverDTO;
 import rw.bk.taxi24.api.service.mapper.DriverMapper;
@@ -28,6 +30,7 @@ import javax.persistence.EntityManager;
 import java.util.List;
 
 
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static rw.bk.taxi24.api.web.rest.TestUtil.createFormattingConversionService;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -57,6 +60,10 @@ public class DriverResourceIntTest {
 
     @Autowired
     private DriverRepository driverRepository;
+
+
+    @Autowired
+    private RiderRepository riderRepository;
 
 
     @Autowired
@@ -223,6 +230,40 @@ public class DriverResourceIntTest {
             .andExpect(jsonPath("$.[*].status").value(hasItem(DriverStatus.AVAILABLE.toString())))
             .andExpect(jsonPath("$.[*].status").value(not(hasItem(DriverStatus.OCCUPIED.toString()))));
     }
+
+
+    @Test
+    @Transactional
+    public void get3AvailableDriversForRiderId() throws Exception {
+        // Initialize the database
+        driverRepository.saveAndFlush(driver);
+        Driver farAwayDriver = createEntity(this.em);
+        farAwayDriver.status(DriverStatus.AVAILABLE).latitude(10D).longitude(10D).name("FarAway");
+        Driver veryFarAwayDriver = createEntity(this.em);
+        veryFarAwayDriver.status(DriverStatus.AVAILABLE).latitude(50D).longitude(-50D).name("VeryFarAway");
+        Driver northPoleDriver = createEntity(this.em);
+        northPoleDriver.status(DriverStatus.AVAILABLE).latitude(89D).longitude(10D).name("NorthPole");
+        driverRepository.saveAndFlush(farAwayDriver);
+        driverRepository.saveAndFlush(veryFarAwayDriver);
+        driverRepository.saveAndFlush(northPoleDriver);
+        Rider rider = new Rider().name("Rider").latitude(-1.9532425295779272D).longitude(30.093203119591976D);
+        riderRepository.saveAndFlush(rider);
+
+
+        // Get all the driverList
+        restDriverMockMvc.perform(get("/api/drivers?sort=id,desc&riderId=" + rider.getId()))
+            .andExpect(status().isOk()).andDo(print())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(driver.getId().intValue())))
+            .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)))
+            .andExpect(jsonPath("$.[*].name").value(hasItem(farAwayDriver.getName())))
+            .andExpect(jsonPath("$.[*].name").value(hasItem(veryFarAwayDriver.getName())))
+            .andExpect(jsonPath("$.[*].name").value(not(hasItem(northPoleDriver.getName()))))
+            .andExpect(jsonPath("$.[*].latitude").value(hasItem(KIMI_LATITUDE.doubleValue())))
+            .andExpect(jsonPath("$.[*].status").value(hasItem(DriverStatus.AVAILABLE.toString())))
+            .andExpect(jsonPath("$.[*].status").value(not(hasItem(DriverStatus.OCCUPIED.toString()))));
+    }
+
 
 
 

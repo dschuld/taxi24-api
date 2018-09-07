@@ -14,6 +14,11 @@ public class RiderDTO implements Serializable {
 
     private Integer amountRides;
 
+    private Double latitude;
+
+
+    private Double longitude;
+
     public Long getId() {
         return id;
     }
@@ -36,6 +41,23 @@ public class RiderDTO implements Serializable {
 
     public void setAmountRides(Integer amountRides) {
         this.amountRides = amountRides;
+    }
+
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
     }
 
     @Override
@@ -65,6 +87,8 @@ public class RiderDTO implements Serializable {
             "id=" + getId() +
             ", name='" + getName() + "'" +
             ", amountRides=" + getAmountRides() +
+            ", latitude=" + getLatitude() +
+            ", longitude=" + getLongitude() +
             "}";
     }
 }

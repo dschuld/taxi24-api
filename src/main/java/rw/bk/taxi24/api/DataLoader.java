@@ -23,16 +23,16 @@ public class DataLoader implements ApplicationRunner {
     }
 
     public void run(ApplicationArguments args) {
-        Driver driver = new Driver().name("David").latitude(-1.9544746615897106D).longitude(30.08274669333173D).status(DriverStatus.AVAILABLE);
-        driverRepository.save(driver);
-        driver = new Driver().name("Melanie").latitude(-1.9365425785635548D).longitude(30.077939211280636D).status(DriverStatus.AVAILABLE);
-        driverRepository.save(driver);
-        driver = new Driver().name("Filou").latitude(-1.962992861040836D).longitude(30.13498306274414D).status(DriverStatus.AVAILABLE);
-        driverRepository.save(driver);
-
-        Rider rider = new Rider().name("Rider1").amountRides(0);
-        riderRepository.save(rider);
-        rider = new Rider().name("Rider2").amountRides(10);
-        riderRepository.save(rider);
+//        Driver driver = new Driver().name("David").latitude(-1.9544746615897106D).longitude(30.08274669333173D).status(DriverStatus.AVAILABLE);
+//        driverRepository.save(driver);
+//        driver = new Driver().name("Melanie").latitude(-1.9365425785635548D).longitude(30.077939211280636D).status(DriverStatus.AVAILABLE);
+//        driverRepository.save(driver);
+//        driver = new Driver().name("Filou").latitude(-1.962992861040836D).longitude(30.13498306274414D).status(DriverStatus.AVAILABLE);
+//        driverRepository.save(driver);
+//
+//        Rider rider = new Rider().name("Rider1").amountRides(0).latitude(1.9532425295779272D).longitude(30.093203119591976D);
+//        riderRepository.save(rider);
+//        rider = new Rider().name("Rider2").amountRides(10).latitude(2D).longitude(2D);
+//        riderRepository.save(rider);
     }
 }

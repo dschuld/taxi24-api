@@ -1,10 +1,13 @@
 package rw.bk.taxi24.api.service;
 
+import javafx.collections.transformation.SortedList;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import rw.bk.taxi24.api.domain.Driver;
+import rw.bk.taxi24.api.domain.Rider;
 import rw.bk.taxi24.api.domain.enumeration.DriverStatus;
 import rw.bk.taxi24.api.repository.DriverRepository;
+import rw.bk.taxi24.api.repository.RiderRepository;
 import rw.bk.taxi24.api.service.dto.DriverDTO;
 import rw.bk.taxi24.api.service.mapper.DriverMapper;
 import org.slf4j.Logger;
@@ -16,7 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -31,11 +34,14 @@ public class DriverService {
 
     private final DriverRepository driverRepository;
 
+    private final RiderRepository riderRepository;
+
     private final DriverMapper driverMapper;
 
-    public DriverService(DriverRepository driverRepository, DriverMapper driverMapper) {
+    public DriverService(DriverRepository driverRepository, RiderRepository riderRepository, DriverMapper driverMapper) {
         this.driverRepository = driverRepository;
         this.driverMapper = driverMapper;
+        this.riderRepository = riderRepository;
     }
 
     /**
@@ -73,7 +79,6 @@ public class DriverService {
     }
 
 
-
     /**
      * Get one driver by id.
      *
@@ -102,5 +107,31 @@ public class DriverService {
         Predicate<Driver> radiusFilter = driver -> ServiceUtils.kilometersBetweenCoordinates(latitude, longitude, driver.getLatitude(), driver.getLongitude()) < radius;
         Page<Driver> byStatus = driverRepository.findByStatus(pageable, DriverStatus.AVAILABLE);
         return new PageImpl<Driver>(byStatus.stream().filter(radiusFilter).collect(Collectors.toList())).map(driverMapper::toDto);
+    }
+
+    public Page<DriverDTO> findClosestDriversForRider(Pageable pageable, long riderId, int numRiders) {
+        log.debug("Request to get " + numRiders + " closest available Drivers for Rider " + riderId);
+        Rider rider = riderRepository.findById(riderId).orElseThrow(() -> new NoSuchElementException("Rider with ID " + riderId + " not found"));
+
+        SortedMap<Double, DriverDTO> sortedMap = new TreeMap<>();
+        findAllAvailableDrivers(pageable).stream().forEach(driver -> sortedMap.put(calculateDistanceFromRider(driver, rider), driver));
+
+        List<DriverDTO> resultList = new ArrayList<>();
+        if (sortedMap.size() <= numRiders) {
+            resultList.addAll(sortedMap.values());
+        } else {
+            Iterator<DriverDTO> iterator = sortedMap.values().iterator();
+            for(int i = 0; i < numRiders; i++ ) {
+                resultList.add(iterator.next());
+            }
+        }
+
+        return new PageImpl<>(resultList);
+
+    }
+
+    private Double calculateDistanceFromRider(DriverDTO driver,Rider rider) {
+        return ServiceUtils.kilometersBetweenCoordinates(driver.getLatitude(), driver.getLongitude(), rider.getLatitude(), rider.getLongitude());
+
     }
 }

@@ -1,7 +1,6 @@
 package rw.bk.taxi24.api.web.rest;
 
 import com.codahale.metrics.annotation.Timed;
-import rw.bk.taxi24.api.domain.enumeration.DriverStatus;
 import rw.bk.taxi24.api.service.DriverService;
 import rw.bk.taxi24.api.web.rest.errors.BadRequestAlertException;
 import rw.bk.taxi24.api.web.rest.util.HeaderUtil;
@@ -21,7 +20,10 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+
+import static rw.bk.taxi24.api.domain.enumeration.DriverStatus.AVAILABLE;
 
 /**
  * REST controller for managing Driver.
@@ -90,21 +92,51 @@ public class DriverResource {
      */
     @GetMapping("/drivers")
     @Timed
-    public ResponseEntity<List<DriverDTO>> getAllDrivers(Pageable pageable, @RequestParam(value = "status", required = false) String status, @RequestParam(value = "latitude", required = false) Double latitude, @RequestParam(value = "longitude", required = false) Double longitude, @RequestParam(value = "radius", required = false, defaultValue = "3.0D") Double radius) {
+    public ResponseEntity<List<DriverDTO>> dispatchGetDriversCall(Pageable pageable, @RequestParam Map<String, String> params) {
         log.debug("REST request to get a page of Drivers");
-
-        Page<DriverDTO> page;
-
-        if(status !=  null && status.toLowerCase().equals(DriverStatus.AVAILABLE.toString().toLowerCase())) {
-            if (latitude != null && longitude != null) {
-                page = driverService.findAvailableDriversWithinRadius(pageable, latitude, longitude, radius);
+        try {
+            if (params.containsKey("riderId")) {
+                return findClosestForRider(pageable, Long.valueOf(params.get("riderId")));
+            } else if (params.containsKey("latitude") && params.containsKey("longitude")) {
+                return findWithinRadius(pageable, params);
+            } else if (params.containsKey("status") && params.get("status").toLowerCase().equals(AVAILABLE.toString().toLowerCase())) {
+                return findAvailable(pageable);
             } else {
-                page = driverService.findAllAvailableDrivers(pageable);
+                return findAll(pageable);
             }
-        } else {
-            page = driverService.findAll(pageable);
+        } catch (NumberFormatException e) {
+            throw new BadRequestAlertException(e.getMessage(), "Driver", "WrongNumberFormat");
         }
+    }
 
+    private ResponseEntity<List<DriverDTO>> findClosestForRider(Pageable pageable, Long riderId) {
+
+        Page<DriverDTO> page = driverService.findClosestDriversForRider(pageable, riderId, 3);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/drivers");
+        return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
+    }
+
+    private ResponseEntity<List<DriverDTO>> findAvailable(Pageable pageable) {
+
+        Page<DriverDTO> page = driverService.findAllAvailableDrivers(pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/drivers");
+        return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
+    }
+
+    private ResponseEntity<List<DriverDTO>> findWithinRadius(Pageable pageable, Map<String, String> params) {
+
+        Double latitude = Double.valueOf(params.get("latitude"));
+        Double longitude = Double.valueOf(params.get("longitude"));
+        Double radius = params.containsKey("radius") ? Double.valueOf(params.get("radius")) : 3D;
+        Page<DriverDTO> page = driverService.findAvailableDriversWithinRadius(pageable, latitude, longitude, radius);
+
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/drivers");
+        return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
+
+    }
+
+    private ResponseEntity<List<DriverDTO>> findAll(Pageable pageable) {
+        Page<DriverDTO> page = driverService.findAll(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/drivers");
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }

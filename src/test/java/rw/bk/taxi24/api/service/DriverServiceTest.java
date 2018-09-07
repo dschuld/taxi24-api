@@ -14,8 +14,10 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit4.SpringRunner;
 import rw.bk.taxi24.api.domain.Driver;
+import rw.bk.taxi24.api.domain.Rider;
 import rw.bk.taxi24.api.domain.enumeration.DriverStatus;
 import rw.bk.taxi24.api.repository.DriverRepository;
+import rw.bk.taxi24.api.repository.RiderRepository;
 import rw.bk.taxi24.api.service.dto.DriverDTO;
 import rw.bk.taxi24.api.service.mapper.DriverMapper;
 
@@ -34,6 +36,9 @@ public class DriverServiceTest {
 
     @MockBean
     private DriverRepository repository;
+
+    @MockBean
+    private RiderRepository riderRepository;
 
     @Spy
     private DriverMapper driverMapper;
@@ -90,6 +95,27 @@ public class DriverServiceTest {
 
             assertEquals(3, drivers.size());
         }
+
+    }
+
+    @Test
+    public void findClosestDriversForRider() {
+
+        PageImpl<Driver> driverPage = new PageImpl<>(drivers);
+        PageRequest pageRequest = PageRequest.of(1, 1);
+        when(repository.findByStatus(any(), any())).thenReturn(driverPage);
+        double kigaliHeightsLat = -1.9532425295779272d;
+        double kigaliHeightsLong = 30.093203119591976d;
+        Rider rider = new Rider().name("KigaliHeightsRider").latitude(kigaliHeightsLat).longitude(kigaliHeightsLong);
+        when(riderRepository.findById(any())).thenReturn(Optional.of(rider));
+
+        Page<DriverDTO> closestDriversForRider = service.findClosestDriversForRider(pageRequest, 1L, 3);
+
+        List<DriverDTO> content = closestDriversForRider.getContent();
+        assertEquals(content.size(), 3);
+        assertEquals(content.get(0).getName(), "KimiDriver");
+        assertEquals(content.get(1).getName(), "UniOfRwandaDriver");
+        assertEquals(content.get(2).getName(), "UsEmbassyDriver");
 
     }
 

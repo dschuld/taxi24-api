@@ -28,6 +28,12 @@ public class Rider implements Serializable {
     @Column(name = "amount_rides")
     private Integer amountRides;
 
+    @Column(name = "latitude")
+    private Double latitude;
+
+    @Column(name = "longitude")
+    private Double longitude;
+
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
     public Long getId() {
         return id;
@@ -43,6 +49,32 @@ public class Rider implements Serializable {
 
     public Rider name(String name) {
         this.name = name;
+        return this;
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public Rider latitude(Double latitude) {
+        this.latitude = latitude;
+        return this;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
+    }
+
+    public Rider longitude(Double longitude) {
+        this.longitude = longitude;
         return this;
     }
 
@@ -90,6 +122,8 @@ public class Rider implements Serializable {
             "id=" + getId() +
             ", name='" + getName() + "'" +
             ", amountRides=" + getAmountRides() +
+            ", latitude=" + getLatitude() +
+            ", longitude=" + getLongitude() +
             "}";
     }
 }
