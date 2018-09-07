@@ -90,9 +90,21 @@ public class DriverResource {
      */
     @GetMapping("/drivers")
     @Timed
-    public ResponseEntity<List<DriverDTO>> getAllDrivers(Pageable pageable, @RequestParam(value = "status", required = false) String status) {
+    public ResponseEntity<List<DriverDTO>> getAllDrivers(Pageable pageable, @RequestParam(value = "status", required = false) String status, @RequestParam(value = "latitude", required = false) Double latitude, @RequestParam(value = "longitude", required = false) Double longitude, @RequestParam(value = "radius", required = false, defaultValue = "3.0D") Double radius) {
         log.debug("REST request to get a page of Drivers");
-        Page<DriverDTO> page = status != null && status.toLowerCase().equals(DriverStatus.AVAILABLE.toString().toLowerCase()) ? driverService.findAllAvailableDrivers(pageable) : driverService.findAll(pageable);
+
+        Page<DriverDTO> page;
+
+        if(status !=  null && status.toLowerCase().equals(DriverStatus.AVAILABLE.toString().toLowerCase())) {
+            if (latitude != null && longitude != null) {
+                page = driverService.findAvailableDriversWithinRadius(pageable, latitude, longitude, radius);
+            } else {
+                page = driverService.findAllAvailableDrivers(pageable);
+            }
+        } else {
+            page = driverService.findAll(pageable);
+        }
+
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/drivers");
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }

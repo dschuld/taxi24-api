@@ -46,11 +46,11 @@ public class DriverResourceIntTest {
     private static final String DEFAULT_NAME = "AAAAAAAAAA";
     private static final String UPDATED_NAME = "BBBBBBBBBB";
 
-    private static final Float DEFAULT_LATITUDE = 1F;
-    private static final Float UPDATED_LATITUDE = 2F;
+    private static final Double KIMI_LATITUDE = -1.9544746615897D;
+    private static final Double AIRPORT_LATITUDE = -1.962992861040D;
 
-    private static final Float DEFAULT_LONGITUDE = 1F;
-    private static final Float UPDATED_LONGITUDE = 2F;
+    private static final Double KIMI_LONGITUDE = 30.08274669333D;
+    private static final Double AIRPORT_LONGITUDE = 30.13498306274D;
 
     private static final DriverStatus DEFAULT_STATUS = DriverStatus.AVAILABLE;
     private static final DriverStatus UPDATED_STATUS = DriverStatus.OCCUPIED;
@@ -102,8 +102,8 @@ public class DriverResourceIntTest {
     public static Driver createEntity(EntityManager em) {
         Driver driver = new Driver()
             .name(DEFAULT_NAME)
-            .latitude(DEFAULT_LATITUDE)
-            .longitude(DEFAULT_LONGITUDE)
+            .latitude(KIMI_LATITUDE)
+            .longitude(KIMI_LONGITUDE)
             .status(DEFAULT_STATUS);
         return driver;
     }
@@ -130,8 +130,8 @@ public class DriverResourceIntTest {
         assertThat(driverList).hasSize(databaseSizeBeforeCreate + 1);
         Driver testDriver = driverList.get(driverList.size() - 1);
         assertThat(testDriver.getName()).isEqualTo(DEFAULT_NAME);
-        assertThat(testDriver.getLatitude()).isEqualTo(DEFAULT_LATITUDE);
-        assertThat(testDriver.getLongitude()).isEqualTo(DEFAULT_LONGITUDE);
+        assertThat(testDriver.getLatitude()).isEqualTo(KIMI_LATITUDE);
+        assertThat(testDriver.getLongitude()).isEqualTo(KIMI_LONGITUDE);
         assertThat(testDriver.getStatus()).isEqualTo(DEFAULT_STATUS);
     }
 
@@ -167,8 +167,8 @@ public class DriverResourceIntTest {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(driver.getId().intValue())))
             .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME.toString())))
-            .andExpect(jsonPath("$.[*].latitude").value(hasItem(DEFAULT_LATITUDE.doubleValue())))
-            .andExpect(jsonPath("$.[*].longitude").value(hasItem(DEFAULT_LONGITUDE.doubleValue())))
+            .andExpect(jsonPath("$.[*].latitude").value(hasItem(KIMI_LATITUDE.doubleValue())))
+            .andExpect(jsonPath("$.[*].longitude").value(hasItem(KIMI_LONGITUDE.doubleValue())))
             .andExpect(jsonPath("$.[*].status").value(hasItem(DEFAULT_STATUS.toString())));
     }
 
@@ -191,11 +191,39 @@ public class DriverResourceIntTest {
             .andExpect(jsonPath("$.[*].id").value(hasItem(driver.getId().intValue())))
             .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)))
             .andExpect(jsonPath("$.[*].name").value(not(hasItem(occupiedName))))
-            .andExpect(jsonPath("$.[*].latitude").value(hasItem(DEFAULT_LATITUDE.doubleValue())))
-            .andExpect(jsonPath("$.[*].longitude").value(hasItem(DEFAULT_LONGITUDE.doubleValue())))
+            .andExpect(jsonPath("$.[*].latitude").value(hasItem(KIMI_LATITUDE.doubleValue())))
+            .andExpect(jsonPath("$.[*].longitude").value(hasItem(KIMI_LONGITUDE.doubleValue())))
             .andExpect(jsonPath("$.[*].status").value(hasItem(DriverStatus.AVAILABLE.toString())))
             .andExpect(jsonPath("$.[*].status").value(not(hasItem(DriverStatus.OCCUPIED.toString()))));
     }
+
+
+    @Test
+    @Transactional
+    public void getAllAvailableDriversInDefaultRadius() throws Exception {
+        // Initialize the database
+        driverRepository.saveAndFlush(driver);
+        Driver farAwayDriver = createEntity(this.em);
+        farAwayDriver.setStatus(DriverStatus.AVAILABLE);
+        farAwayDriver.setLatitude(10D);
+        farAwayDriver.setLongitude(10D);
+        farAwayDriver.setName("FarAway");
+        driverRepository.saveAndFlush(farAwayDriver);
+
+
+        // Get all the driverList
+        restDriverMockMvc.perform(get("/api/drivers?sort=id,desc&status=available&latitude=-1.9532425295779272&longitude=30.093203119591976"))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(driver.getId().intValue())))
+            .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)))
+            .andExpect(jsonPath("$.[*].name").value(not(hasItem(farAwayDriver.getName()))))
+            .andExpect(jsonPath("$.[*].latitude").value(hasItem(KIMI_LATITUDE.doubleValue())))
+            .andExpect(jsonPath("$.[*].longitude").value(not(hasItem(farAwayDriver.getLongitude().doubleValue()))))
+            .andExpect(jsonPath("$.[*].status").value(hasItem(DriverStatus.AVAILABLE.toString())))
+            .andExpect(jsonPath("$.[*].status").value(not(hasItem(DriverStatus.OCCUPIED.toString()))));
+    }
+
 
 
     @Test
@@ -210,8 +238,8 @@ public class DriverResourceIntTest {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.id").value(driver.getId().intValue()))
             .andExpect(jsonPath("$.name").value(DEFAULT_NAME.toString()))
-            .andExpect(jsonPath("$.latitude").value(DEFAULT_LATITUDE.doubleValue()))
-            .andExpect(jsonPath("$.longitude").value(DEFAULT_LONGITUDE.doubleValue()))
+            .andExpect(jsonPath("$.latitude").value(KIMI_LATITUDE.doubleValue()))
+            .andExpect(jsonPath("$.longitude").value(KIMI_LONGITUDE.doubleValue()))
             .andExpect(jsonPath("$.status").value(DEFAULT_STATUS.toString()));
     }
     @Test
@@ -236,8 +264,8 @@ public class DriverResourceIntTest {
         em.detach(updatedDriver);
         updatedDriver
             .name(UPDATED_NAME)
-            .latitude(UPDATED_LATITUDE)
-            .longitude(UPDATED_LONGITUDE)
+            .latitude(AIRPORT_LATITUDE)
+            .longitude(AIRPORT_LONGITUDE)
             .status(UPDATED_STATUS);
         DriverDTO driverDTO = driverMapper.toDto(updatedDriver);
 
@@ -251,8 +279,8 @@ public class DriverResourceIntTest {
         assertThat(driverList).hasSize(databaseSizeBeforeUpdate);
         Driver testDriver = driverList.get(driverList.size() - 1);
         assertThat(testDriver.getName()).isEqualTo(UPDATED_NAME);
-        assertThat(testDriver.getLatitude()).isEqualTo(UPDATED_LATITUDE);
-        assertThat(testDriver.getLongitude()).isEqualTo(UPDATED_LONGITUDE);
+        assertThat(testDriver.getLatitude()).isEqualTo(AIRPORT_LATITUDE);
+        assertThat(testDriver.getLongitude()).isEqualTo(AIRPORT_LONGITUDE);
         assertThat(testDriver.getStatus()).isEqualTo(UPDATED_STATUS);
     }
 

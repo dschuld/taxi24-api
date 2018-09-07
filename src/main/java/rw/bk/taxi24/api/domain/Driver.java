@@ -33,10 +33,10 @@ public class Driver implements Serializable {
     private String name;
 
     @Column(name = "latitude")
-    private Float latitude;
+    private Double latitude;
 
     @Column(name = "longitude")
-    private Float longitude;
+    private Double longitude;
 
 
     @Enumerated(EnumType.ORDINAL)
@@ -65,29 +65,29 @@ public class Driver implements Serializable {
         this.name = name;
     }
 
-    public Float getLatitude() {
+    public Double getLatitude() {
         return latitude;
     }
 
-    public Driver latitude(Float latitude) {
+    public Driver latitude(Double latitude) {
         this.latitude = latitude;
         return this;
     }
 
-    public void setLatitude(Float latitude) {
+    public void setLatitude(Double latitude) {
         this.latitude = latitude;
     }
 
-    public Float getLongitude() {
+    public Double getLongitude() {
         return longitude;
     }
 
-    public Driver longitude(Float longitude) {
+    public Driver longitude(Double longitude) {
         this.longitude = longitude;
         return this;
     }
 
-    public void setLongitude(Float longitude) {
+    public void setLongitude(Double longitude) {
         this.longitude = longitude;
     }
 

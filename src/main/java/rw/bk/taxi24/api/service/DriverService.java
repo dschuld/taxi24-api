@@ -1,5 +1,7 @@
 package rw.bk.taxi24.api.service;
 
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import rw.bk.taxi24.api.domain.Driver;
 import rw.bk.taxi24.api.domain.enumeration.DriverStatus;
 import rw.bk.taxi24.api.repository.DriverRepository;
@@ -15,6 +17,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 import java.util.Optional;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
 /**
  * Service Implementation for managing Driver.
  */
@@ -92,4 +97,10 @@ public class DriverService {
         driverRepository.deleteById(id);
     }
 
+    public Page<DriverDTO> findAvailableDriversWithinRadius(Pageable pageable, double latitude, double longitude, double radius) {
+        log.debug("Request to get all available Drivers within " + radius + "km radius");
+        Predicate<Driver> radiusFilter = driver -> ServiceUtils.kilometersBetweenCoordinates(latitude, longitude, driver.getLatitude(), driver.getLongitude()) < radius;
+        Page<Driver> byStatus = driverRepository.findByStatus(pageable, DriverStatus.AVAILABLE);
+        return new PageImpl<Driver>(byStatus.stream().filter(radiusFilter).collect(Collectors.toList())).map(driverMapper::toDto);
+    }
 }

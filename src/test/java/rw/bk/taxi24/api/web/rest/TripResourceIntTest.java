@@ -116,8 +116,8 @@ public class TripResourceIntTest {
             .setConversionService(createFormattingConversionService())
             .setMessageConverters(jacksonMessageConverter).build();
 
-        availableDriver = new Driver().status(DriverStatus.AVAILABLE).latitude(1.1f).latitude(2.2f).name("AvailableDriver");
-        occupiedDriver = new Driver().status(DriverStatus.OCCUPIED).latitude(1.1f).latitude(2.2f).name("OccupiedDriver");
+        availableDriver = new Driver().status(DriverStatus.AVAILABLE).latitude(1.1d).latitude(2.2d).name("AvailableDriver");
+        occupiedDriver = new Driver().status(DriverStatus.OCCUPIED).latitude(1.1d).latitude(2.2d).name("OccupiedDriver");
         rider = new Rider().name("TheRider").amountRides(0);
         driverRepository.save(availableDriver);
         driverRepository.save(occupiedDriver);
