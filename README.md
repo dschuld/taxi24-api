@@ -1,81 +1,36 @@
-# taxi24api
-This application was generated using JHipster 5.0.1, you can find documentation and help at [https://www.jhipster.tech/documentation-archive/v5.0.1](https://www.jhipster.tech/documentation-archive/v5.0.1).
+# Taxi24 API
 
-This is a "microservice" application intended to be part of a microservice architecture, please refer to the [Doing microservices with JHipster][] page of the documentation for more information.
+This is the exemplary Taxi24 API application for review by BK Digital Factory. It is implemented in Spring Boot 2, using the [JHipster generator](https://www.jhipster.tech/).
 
-This application is configured for Service Discovery and Configuration with . On launch, it will refuse to start if it is not able to connect to .
+It implements the data model and all use cases required in the task:
 
-## Development
+- Driver API + Entity
+    - 
 
-To start your application in the dev profile, simply run:
+
+## Building and running the application
+
+After cloning the repository, use Maven to build and run the application. Maven does not have to be installed locally, just use the mvnw wrapper in the root directory. To start your application in the dev profile, simply run:
 
     ./mvnw
-
-
-For further instructions on how to develop with JHipster, have a look at [Using JHipster in development][].
+    
+The application is compiled, unit and integration tests are run, and the server is automatically launched on port 8081. The API base path then is http://localhost:8081/taxi24api.<br>
+There are 2 Maven profiles: dev (default) for the development mode, and prod for the production mode. For a simple demonstration, the dev profile should be used. This launches an embedded H2 in-memory database. On every launch, an empty H2 database is created and all necessary tables are created automatically. The database console can be accesses via http://localhost:8081/taxi24api/h2-console/.<br>
+The production profile is configured to use a Postgres DB. The DB properties have to be configured in the src/main/resources/config/application-prod.yml file, section spring.datasource. 
 
 
 
 ## Building for production
 
-To optimize the taxi24api application for production, run:
 
-    ./mvnw -Pprod clean package
-
-To ensure everything worked, run:
-
-    java -jar target/*.war
-
-
-Refer to [Using JHipster in production][] for more details.
 
 ## Testing
 
 To launch your application's tests, run:
 
     ./mvnw clean test
-### Other tests
 
-Performance tests are run by [Gatling][] and written in Scala. They're located in [src/test/gatling](src/test/gatling).
 
-To use those tests, you must install Gatling from [https://gatling.io/](https://gatling.io/).
 
-For more information, refer to the [Running tests page][].
 
-## Using Docker to simplify development (optional)
 
-You can use Docker to improve your JHipster development experience. A number of docker-compose configuration are available in the [src/main/docker](src/main/docker) folder to launch required third party services.
-
-For example, to start a postgresql database in a docker container, run:
-
-    docker-compose -f src/main/docker/postgresql.yml up -d
-
-To stop it and remove the container, run:
-
-    docker-compose -f src/main/docker/postgresql.yml down
-
-You can also fully dockerize your application and all the services that it depends on.
-To achieve this, first build a docker image of your app by running:
-
-    ./mvnw verify -Pprod dockerfile:build dockerfile:tag@version dockerfile:tag@commit
-
-Then run:
-
-    docker-compose -f src/main/docker/app.yml up -d
-
-For more information refer to [Using Docker and Docker-Compose][], this page also contains information on the docker-compose sub-generator (`jhipster docker-compose`), which is able to generate docker configurations for one or several JHipster applications.
-
-## Continuous Integration (optional)
-
-To configure CI for your project, run the ci-cd sub-generator (`jhipster ci-cd`), this will let you generate configuration files for a number of Continuous Integration systems. Consult the [Setting up Continuous Integration][] page for more information.
-
-[JHipster Homepage and latest documentation]: https://www.jhipster.tech
-[JHipster 5.0.1 archive]: https://www.jhipster.tech/documentation-archive/v5.0.1
-[Doing microservices with JHipster]: https://www.jhipster.tech/documentation-archive/v5.0.1/microservices-architecture/
-[Using JHipster in development]: https://www.jhipster.tech/documentation-archive/v5.0.1/development/
-[Using Docker and Docker-Compose]: https://www.jhipster.tech/documentation-archive/v5.0.1/docker-compose
-[Using JHipster in production]: https://www.jhipster.tech/documentation-archive/v5.0.1/production/
-[Running tests page]: https://www.jhipster.tech/documentation-archive/v5.0.1/running-tests/
-[Setting up Continuous Integration]: https://www.jhipster.tech/documentation-archive/v5.0.1/setting-up-ci/
-
-[Gatling]: http://gatling.io/
