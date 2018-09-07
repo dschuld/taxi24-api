@@ -2,10 +2,7 @@
 
 This is the exemplary Taxi24 API application for review by BK Digital Factory. It is implemented in Spring Boot 2, using the [JHipster generator](https://www.jhipster.tech/).
 
-It implements the data model and all use cases required in the task:
-
-- Driver API + Entity
-    - 
+It implements the data model and all use cases required in the task. 
 
 
 ## Building and running the application
@@ -20,9 +17,102 @@ The production profile is configured to use a Postgres DB. The DB properties hav
 
 
 
-## Building for production
+## Data Model
+
+The following 3 CREATE TABLE statements show the data model for the Driver, Rider and Trip entities. They are given here for information, however the tables are created automatically in the DB when the application connects, so there is no need to execute them manually.    
+
+    CREATE TABLE public.trip
+    (
+        id bigint NOT NULL,
+        driver_id integer NOT NULL,
+        rider_id integer NOT NULL,
+        trip_status integer NOT NULL,
+        duration real,
+        distance real,
+        CONSTRAINT pk_trip PRIMARY KEY (id)
+    )
+
+    CREATE TABLE public.driver
+    (
+        id bigint NOT NULL,
+        name character varying(255),
+        latitude real,
+        longitude real,
+        status integer NOT NULL,
+        CONSTRAINT pk_driver PRIMARY KEY (id)
+    )
+
+    CREATE TABLE public.rider
+    (
+        id bigint NOT NULL,
+        name character varying(255),
+        amount_rides integer,
+        latitude real NOT NULL,
+        longitude real NOT NULL,
+        CONSTRAINT pk_rider PRIMARY KEY (id)
+    )
 
 
+## API
+
+The application provides 3 domain endpoints:
+
+- taxi24api/api/driver
+    - GET /driver request to get a list of drivers
+    - GET /driver/{id} to get a specific driver
+    - POST /driver to create a driver. The body must have a payload in the following format and the status must be either AVAILABLE, OCCUPIED or UNAVAILABLE (note the all caps letters):
+    
+    .
+
+        {
+            "name": "DriverName",
+            "latitude" : -1.9365425785635548,
+            "longitude": 30.077939211280636,
+            "status" : "AVAILABLE"
+        }
+        
+    - DELETE /driver/{id} deletes a driver
+    - PUT /driver/{id} updates an existing driver.
+
+- taxi24api/api/rider
+    - GET /riders request to get a list of riders
+    - GET /riders/{id} to get a specific rider
+    - POST /riders to create a rider. The body must have a payload in the following format:
+    
+    .
+
+        {
+            "name": "riderName",
+            "latitude": -1.9365425785635548,
+            "longitude": 30.077939211280636
+        }
+        
+    - DELETE /riders/{id} deletes a rider
+    - PUT /riders/{id} updates an existing rider.
+- taxi24api/api/trips
+    - GET /trips request to get a list of trip
+    - GET /trips/{id} to get a specific trip
+    - POST /trips to create a trip. The rider and driver specified by the request must exist in the database. The body must have a payload in the following format:
+    
+    .
+
+        {
+            "riderId" : 1001,
+            "driverId": 951
+        }
+
+    - PATCH /trips/{id} to update the status of a trip. The new status must be contained as JSON in the body. Valid values are "requested", "active", "cancelled" and "completed". Valid state transitions are only requested -> active, requested -> cancelled or active -> completed.
+   
+    .
+
+        {
+            "newStatus" : "completed"
+        }
+
+    - DELETE /trips/{id} deletes a trip
+
+
+- JHipster endpoints
 
 ## Testing
 
