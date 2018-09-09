@@ -6,57 +6,15 @@
 	},
 	"item": [
 		{
-			"name": "GetRiders",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"body": {},
-				"url": {
-					"raw": "localhost:8081/taxi24api/api/drivers",
-					"host": [
-						"localhost"
-					],
-					"port": "8081",
-					"path": [
-						"taxi24api",
-						"api",
-						"drivers"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "GetDriver",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"body": {},
-				"url": {
-					"raw": "localhost:8081/taxi24api/api/drivers",
-					"host": [
-						"localhost"
-					],
-					"port": "8081",
-					"path": [
-						"taxi24api",
-						"api",
-						"drivers"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "CreateDriver",
+			"name": "CreateKimiDriver",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
-						"id": "f83d4c82-792b-47b1-bcdd-be3cfb87a9a3",
+						"id": "c0cdfd6b-9168-4c61-8bc0-97da507debfb",
 						"type": "text/javascript",
 						"exec": [
-							"pm.environment.set(\"driver1Id\", pm.response.json().id);"
+							"pm.environment.set(\"KimiDriver\", pm.response.json().id);"
 						]
 					}
 				}
@@ -71,7 +29,212 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"name\": \"Driver1\",\n\t\"latitude\" : -1.9365425785635548,\n\t\"longitude\": 30.077939211280636,\n\t\"status\" : \"AVAILABLE\"\n}"
+					"raw": "{\n\t\"name\": \"KimiDriver\",\n\t\"latitude\" : -1.9481474161148071,\n\t\"longitude\": 30.08274669333173,\n\t\"status\" : \"AVAILABLE\"\n}"
+				},
+				"url": {
+					"raw": "localhost:8081/taxi24api/api/drivers",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"taxi24api",
+						"api",
+						"drivers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "CreateAirportDriver",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "b5e9dd3b-2e65-41e0-ac70-b78831e08998",
+						"type": "text/javascript",
+						"exec": [
+							"pm.environment.set(\"AirportDriver\", pm.response.json().id);"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\": \"AirportDriver\",\n\t\"latitude\" : -1.962992861040836,\n\t\"longitude\": 30.13498306274414,\n\t\"status\" : \"AVAILABLE\"\n}"
+				},
+				"url": {
+					"raw": "localhost:8081/taxi24api/api/drivers",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"taxi24api",
+						"api",
+						"drivers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "CreateBkHqDriver",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "479d2c3f-305a-4715-b7cd-26e4d7b5e59f",
+						"type": "text/javascript",
+						"exec": [
+							"pm.environment.set(\"BkHqDriver\", pm.response.json().id);"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\": \"BkHqDriver\",\n\t\"latitude\" : -1.9481474387299946,\n\t\"longitude\": 30.059639811515808,\n\t\"status\" : \"AVAILABLE\"\n}"
+				},
+				"url": {
+					"raw": "localhost:8081/taxi24api/api/drivers",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"taxi24api",
+						"api",
+						"drivers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "CreateUsEmbassyDriver",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "0df87445-2049-4c75-ba10-71cd1dab6c1f",
+						"type": "text/javascript",
+						"exec": [
+							"pm.environment.set(\"UsEmbassyDriver\", pm.response.json().id);"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\": \"UsEmbassyDriver\",\n\t\"latitude\" : -1.9365425785635548,\n\t\"longitude\": 30.077939211280636,\n\t\"status\" : \"AVAILABLE\"\n}"
+				},
+				"url": {
+					"raw": "localhost:8081/taxi24api/api/drivers",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"taxi24api",
+						"api",
+						"drivers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "CreateNyamiramboStadiumDriver",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "524e5c00-bc2d-4c31-a210-e0216491b11f",
+						"type": "text/javascript",
+						"exec": [
+							"pm.environment.set(\"NyamiramboStadiumDriver\", pm.response.json().id);"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\": \"NyamiramboStadiumDriver\",\n\t\"latitude\" : -1.9783048149631977,\n\t\"longitude\": 30.04395586158978,\n\t\"status\" : \"AVAILABLE\"\n}"
+				},
+				"url": {
+					"raw": "localhost:8081/taxi24api/api/drivers",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"taxi24api",
+						"api",
+						"drivers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "CreateUniOfRwandaDriver",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "63879a49-4e01-4cd9-b2fa-4843d276d627",
+						"type": "text/javascript",
+						"exec": [
+							"pm.environment.set(\"UniOfRwandaDriver\", pm.response.json().id);"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\": \"UniOfRwandaDriver\",\n\t\"latitude\" : -1.96065794316696,\n\t\"longitude\": 30.074461480959258,\n\t\"status\" : \"AVAILABLE\"\n}"
 				},
 				"url": {
 					"raw": "localhost:8081/taxi24api/api/drivers",
@@ -112,7 +275,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\n\t\"name\": \"Rider1\",\n\t\"latitude\" : -1.9365425785635548,\n\t\"longitude\": 30.077939211280636,\n\t\"status\" : \"AVAILABLE\"\n\t\n}"
+					"raw": "{\n\n\t\"name\": \"KigaliHeightsRider\",\n\t\"latitude\" : -1.9532425295779272,\n\t\"longitude\": 30.093203119591976,\n\t\"status\" : \"AVAILABLE\"\n\t\n}"
 				},
 				"url": {
 					"raw": "localhost:8081/taxi24api/api/riders",
@@ -131,6 +294,19 @@
 		},
 		{
 			"name": "CreateTrip",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "de127b79-b39a-4258-bcc0-72df5465464b",
+						"type": "text/javascript",
+						"exec": [
+							"pm.environment.set(\"trip1Id\", pm.response.json().id);",
+							""
+						]
+					}
+				}
+			],
 			"request": {
 				"method": "POST",
 				"header": [
@@ -141,7 +317,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\"riderId\" : {{rider1Id}},\n\"driverId\": {{driver1Id}}\n}"
+					"raw": "{\n\"riderId\" : {{rider1Id}},\n\"driverId\": {{KimiDriver}}\n}"
 				},
 				"url": {
 					"raw": "localhost:8081/taxi24api/api/trips",
@@ -219,13 +395,13 @@
 			"response": []
 		},
 		{
-			"name": "GetTrips",
+			"name": "GetRiders",
 			"request": {
 				"method": "GET",
 				"header": [],
 				"body": {},
 				"url": {
-					"raw": "localhost:8081/taxi24api/api/trips",
+					"raw": "localhost:8081/taxi24api/api/riders",
 					"host": [
 						"localhost"
 					],
@@ -233,7 +409,7 @@
 					"path": [
 						"taxi24api",
 						"api",
-						"trips"
+						"riders"
 					]
 				}
 			},
@@ -255,6 +431,85 @@
 						"taxi24api",
 						"api",
 						"drivers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetDriversForRider",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "localhost:8081/taxi24api/api/drivers?riderId={{rider1Id}}",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"taxi24api",
+						"api",
+						"drivers"
+					],
+					"query": [
+						{
+							"key": "riderId",
+							"value": "{{rider1Id}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetDriversForLocation",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "localhost:8081/taxi24api/api/drivers?latitude=-1.9532425295779272&longitude=30.093203119591976",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"taxi24api",
+						"api",
+						"drivers"
+					],
+					"query": [
+						{
+							"key": "latitude",
+							"value": "-1.9532425295779272"
+						},
+						{
+							"key": "longitude",
+							"value": "30.093203119591976"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetTrips",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "localhost:8081/taxi24api/api/trips",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"taxi24api",
+						"api",
+						"trips"
 					]
 				}
 			},

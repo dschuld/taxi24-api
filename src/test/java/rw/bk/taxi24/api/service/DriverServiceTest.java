@@ -55,7 +55,7 @@ public class DriverServiceTest {
         drivers = new ArrayList<>();
         drivers.add(createDriver(DriverStatus.AVAILABLE, "AirportDriver", 1l, -1.962992861040836d, 30.13498306274414));
         drivers.add(createDriver(DriverStatus.AVAILABLE, "BkHqDriver", 1l, -1.9481474387299946d, 30.059639811515808d));
-        drivers.add(createDriver(DriverStatus.AVAILABLE, "KimiDriver", 1l, -1.9544746615897106d, 30.08274669333173d));
+        drivers.add(createDriver(DriverStatus.AVAILABLE, "KimiDriver", 1l, -1.9481474161148071d, 30.08274669333173d));
         drivers.add(createDriver(DriverStatus.AVAILABLE, "UsEmbassyDriver", 1l, -1.9365425785635548d, 30.077939211280636d));
         drivers.add(createDriver(DriverStatus.AVAILABLE, "NyamiramboStadiumDriver", 1l, -1.9783048149631977d, 30.04395586158978d));
         drivers.add(createDriver(DriverStatus.AVAILABLE, "UniOfRwandaDriver", 1l, -1.96065794316696d, 30.074461480959258d));
