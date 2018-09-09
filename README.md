@@ -1,81 +1,140 @@
-# taxi24api
-This application was generated using JHipster 5.0.1, you can find documentation and help at [https://www.jhipster.tech/documentation-archive/v5.0.1](https://www.jhipster.tech/documentation-archive/v5.0.1).
+# Taxi24 API
 
-This is a "microservice" application intended to be part of a microservice architecture, please refer to the [Doing microservices with JHipster][] page of the documentation for more information.
+This is the exemplary Taxi24 API application for review by BK Digital Factory. It is implemented in Spring Boot 2, using the [JHipster generator](https://www.jhipster.tech/).
 
-This application is configured for Service Discovery and Configuration with . On launch, it will refuse to start if it is not able to connect to .
+It implements the data model and all use cases required in the task. 
 
-## Development
 
-To start your application in the dev profile, simply run:
+## Building and running the application
+
+After cloning the repository, use Maven to build and run the application. Maven does not have to be installed locally, just use the mvnw wrapper in the root directory. To start your application in the dev profile, simply run:
 
     ./mvnw
+    
+The application is compiled, unit and integration tests are run, and the server is automatically launched on port 8081. The API base path then is http://localhost:8081/taxi24api.<br>
+There are 2 Maven profiles: dev (default) for the development mode, and prod for the production mode. For a simple demonstration, the dev profile should be used. This launches an embedded H2 in-memory database. On every launch, an empty H2 database is created and all necessary tables are created automatically. The database console can be accesses via http://localhost:8081/taxi24api/h2-console/.<br>
+The production profile is configured to use a Postgres DB. The DB properties have to be configured in the src/main/resources/config/application-prod.yml file, section spring.datasource. 
 
 
-For further instructions on how to develop with JHipster, have a look at [Using JHipster in development][].
+
+## Data Model
+
+The following 3 CREATE TABLE statements show the data model for the Driver, Rider and Trip entities. They are given here for information, however the tables are created automatically in the DB when the application connects, so there is no need to execute them manually.    
+
+    CREATE TABLE public.trip
+    (
+        id bigint NOT NULL,
+        driver_id integer NOT NULL,
+        rider_id integer NOT NULL,
+        trip_status integer NOT NULL,
+        start_date TIMESTAMP, 
+        end_date TIMESTAMP 
+        CONSTRAINT pk_trip PRIMARY KEY (id)
+    )
+
+    CREATE TABLE public.driver
+    (
+        id bigint NOT NULL,
+        name character varying(255),
+        latitude real,
+        longitude real,
+        status integer NOT NULL,
+        CONSTRAINT pk_driver PRIMARY KEY (id)
+    )
+
+    CREATE TABLE public.rider
+    (
+        id bigint NOT NULL,
+        name character varying(255),
+        amount_rides integer,
+        latitude real NOT NULL,
+        longitude real NOT NULL,
+        CONSTRAINT pk_rider PRIMARY KEY (id)
+    )
+    
+    
+    CREATE SEQUENCE PUBLIC.HIBERNATE_SEQUENCE START WITH 1000 INCREMENT BY 50;
+
+
+## API
+
+The application provides 3 domain endpoints:
+
+- taxi24api/api/driver
+    - GET /driver request to get a list of drivers. This request can contain following query parameters:
+        - <i>status</i>    Currently the only allowed value is "available". Retrieves a list of all available drivers.
+        - <i>longitude/latitude</i>     Specifies a location in coordinats. Both values must be given. All AVAILABLE drivers in a certain radius around this location are returned. Since the status is AVAILABLE by default, it can be omitted here.
+        - <i>radius</i>     Specifies the radius in km around the previously mentioned location. If not given, defaults to 3km.
+        - <i>riderId</i> Retrieves a list of the 3 drivers closest to the position of the rider with the given ID.
+    - GET /driver/{id} to get a specific driver
+    - POST /driver to create a driver. The body must have a payload in the following format and the status must be either AVAILABLE, OCCUPIED or UNAVAILABLE (note the all caps letters):
+    
+    .
+
+        {
+            "name": "DriverName",
+            "latitude" : -1.9365425785635548,
+            "longitude": 30.077939211280636,
+            "status" : "AVAILABLE"
+        }
+        
+    - DELETE /driver/{id} deletes a driver
+    - PUT /driver/{id} updates an existing driver.
+
+- taxi24api/api/rider
+    - GET /riders request to get a list of riders
+    - GET /riders/{id} to get a specific rider
+    - POST /riders to create a rider. The body must have a payload in the following format:
+    
+    .
+
+        {
+            "name": "riderName",
+            "latitude": -1.9365425785635548,
+            "longitude": 30.077939211280636
+        }
+        
+    - DELETE /riders/{id} deletes a rider
+    - PUT /riders/{id} updates an existing rider.
+    
+- taxi24api/api/trips
+    - GET /trips request to get a list of trip. Can be used with query parameter status (values "requested", "active", "cancelled", "completed") to get a list of all trips with the respective status.
+    - GET /trips/{id} to get a specific trip
+    - POST /trips to create a trip. The rider and driver specified by the request must exist in the database. The body must have a payload in the following format:
+    
+    .
+
+        {
+            "riderId" : 1001,
+            "driverId": 951
+        }
+
+    - PATCH /trips/{id} to update the status of a trip. The new status must be contained as JSON in the body. Valid values are "requested", "active", "cancelled" and "completed". Valid state transitions are only requested -> active, requested -> cancelled or active -> completed.
+   
+    .
+
+        {
+            "newStatus" : "completed"
+        }
+
+    - DELETE /trips/{id} deletes a trip
 
 
 
-## Building for production
 
-To optimize the taxi24api application for production, run:
+Additionally, JHipster applications provide non-domain endpoints for management and information:
 
-    ./mvnw -Pprod clean package
-
-To ensure everything worked, run:
-
-    java -jar target/*.war
-
-
-Refer to [Using JHipster in production][] for more details.
+- taxi24api/management/info
+- taxi24api/management/health
+- taxi24api/swagger-resources/
 
 ## Testing
 
-To launch your application's tests, run:
+To launch the application's tests, run:
 
     ./mvnw clean test
-### Other tests
 
-Performance tests are run by [Gatling][] and written in Scala. They're located in [src/test/gatling](src/test/gatling).
+Unit and integration tests are implemented in src/test/java. Additionally, performance test can be implemented with [Gatling](Gatling.io), they have been skipped here due to time constraints.
 
-To use those tests, you must install Gatling from [https://gatling.io/](https://gatling.io/).
 
-For more information, refer to the [Running tests page][].
 
-## Using Docker to simplify development (optional)
-
-You can use Docker to improve your JHipster development experience. A number of docker-compose configuration are available in the [src/main/docker](src/main/docker) folder to launch required third party services.
-
-For example, to start a postgresql database in a docker container, run:
-
-    docker-compose -f src/main/docker/postgresql.yml up -d
-
-To stop it and remove the container, run:
-
-    docker-compose -f src/main/docker/postgresql.yml down
-
-You can also fully dockerize your application and all the services that it depends on.
-To achieve this, first build a docker image of your app by running:
-
-    ./mvnw verify -Pprod dockerfile:build dockerfile:tag@version dockerfile:tag@commit
-
-Then run:
-
-    docker-compose -f src/main/docker/app.yml up -d
-
-For more information refer to [Using Docker and Docker-Compose][], this page also contains information on the docker-compose sub-generator (`jhipster docker-compose`), which is able to generate docker configurations for one or several JHipster applications.
-
-## Continuous Integration (optional)
-
-To configure CI for your project, run the ci-cd sub-generator (`jhipster ci-cd`), this will let you generate configuration files for a number of Continuous Integration systems. Consult the [Setting up Continuous Integration][] page for more information.
-
-[JHipster Homepage and latest documentation]: https://www.jhipster.tech
-[JHipster 5.0.1 archive]: https://www.jhipster.tech/documentation-archive/v5.0.1
-[Doing microservices with JHipster]: https://www.jhipster.tech/documentation-archive/v5.0.1/microservices-architecture/
-[Using JHipster in development]: https://www.jhipster.tech/documentation-archive/v5.0.1/development/
-[Using Docker and Docker-Compose]: https://www.jhipster.tech/documentation-archive/v5.0.1/docker-compose
-[Using JHipster in production]: https://www.jhipster.tech/documentation-archive/v5.0.1/production/
-[Running tests page]: https://www.jhipster.tech/documentation-archive/v5.0.1/running-tests/
-[Setting up Continuous Integration]: https://www.jhipster.tech/documentation-archive/v5.0.1/setting-up-ci/
-
-[Gatling]: http://gatling.io/
