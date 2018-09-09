@@ -21,44 +21,43 @@ The production profile is configured to use a Postgres DB. The DB properties hav
 
 The following 3 CREATE TABLE statements show the data model for the Driver, Rider and Trip entities. They are given here for information, however the tables are created automatically in the DB when the application connects, so there is no need to execute them manually.    
 
-    CREATE TABLE public.trip
-    (
-        id bigint NOT NULL,
-        driver_id integer NOT NULL,
-        rider_id integer NOT NULL,
-        trip_status integer NOT NULL,
-        start_date TIMESTAMP, 
-        end_date TIMESTAMP 
-        CONSTRAINT pk_trip PRIMARY KEY (id)
-    )
-
     CREATE TABLE public.driver
     (
-        id bigint NOT NULL,
+        id bigint SERIAL NOT NULL PRIMARY KEY,
         name character varying(255),
         latitude real,
         longitude real,
-        status integer NOT NULL,
-        CONSTRAINT pk_driver PRIMARY KEY (id)
-    )
+        status integer NOT NULL
+    );
 
     CREATE TABLE public.rider
     (
-        id bigint NOT NULL,
+        id bigint SERIAL  NOT NULL PRIMARY KEY,
         name character varying(255),
         amount_rides integer,
         latitude real NOT NULL,
-        longitude real NOT NULL,
-        CONSTRAINT pk_rider PRIMARY KEY (id)
-    )
-    
+        longitude real NOT NULL
+    );
+
+    CREATE TABLE public.trip
+    (
+        id bigint SERIAL  NOT NULL PRIMARY KEY,
+        driver_id integer NOT NULL REFERENCES driver(id),
+        rider_id integer NOT NULL REFERENCES rider(id),
+        trip_status integer NOT NULL,
+        START_DATE TIMESTAMP, 
+        END_DATE TIMESTAMP 
+    );
+
+
     CREATE TABLE public.invoice
     ( 
-        id bigint NOT NULL,
-        trip_id bigint, 
+        id bigint SERIAL  NOT NULL PRIMARY KEY,
+        trip_id bigint REFERENCES trip(id), 
         amount float4, 
         paid boolean 
-    )
+    );
+
     
     
     CREATE SEQUENCE PUBLIC.HIBERNATE_SEQUENCE START WITH 1000 INCREMENT BY 50;
