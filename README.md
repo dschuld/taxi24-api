@@ -52,6 +52,14 @@ The following 3 CREATE TABLE statements show the data model for the Driver, Ride
         CONSTRAINT pk_rider PRIMARY KEY (id)
     )
     
+    CREATE TABLE public.invoice
+    ( 
+        id bigint NOT NULL,
+        trip_id bigint, 
+        amount float4, 
+        paid boolean 
+    )
+    
     
     CREATE SEQUENCE PUBLIC.HIBERNATE_SEQUENCE START WITH 1000 INCREMENT BY 50;
 
