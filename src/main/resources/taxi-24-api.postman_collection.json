@@ -1,0 +1,264 @@
+{
+	"info": {
+		"_postman_id": "cfc03872-a5d1-4c51-9fd3-c0f3ed84123a",
+		"name": "taxi-24-api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GetRiders",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "localhost:8081/taxi24api/api/drivers",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"taxi24api",
+						"api",
+						"drivers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetDriver",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "localhost:8081/taxi24api/api/drivers",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"taxi24api",
+						"api",
+						"drivers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "CreateDriver",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "f83d4c82-792b-47b1-bcdd-be3cfb87a9a3",
+						"type": "text/javascript",
+						"exec": [
+							"pm.environment.set(\"driver1Id\", pm.response.json().id);"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\": \"Driver1\",\n\t\"latitude\" : -1.9365425785635548,\n\t\"longitude\": 30.077939211280636,\n\t\"status\" : \"AVAILABLE\"\n}"
+				},
+				"url": {
+					"raw": "localhost:8081/taxi24api/api/drivers",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"taxi24api",
+						"api",
+						"drivers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "CreateRider",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "9c3b90b3-3c8d-40bf-8812-4830f0462dfe",
+						"type": "text/javascript",
+						"exec": [
+							"pm.environment.set(\"rider1Id\", pm.response.json().id);"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\n\t\"name\": \"Rider1\",\n\t\"latitude\" : -1.9365425785635548,\n\t\"longitude\": 30.077939211280636,\n\t\"status\" : \"AVAILABLE\"\n\t\n}"
+				},
+				"url": {
+					"raw": "localhost:8081/taxi24api/api/riders",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"taxi24api",
+						"api",
+						"riders"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "CreateTrip",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\"riderId\" : {{rider1Id}},\n\"driverId\": {{driver1Id}}\n}"
+				},
+				"url": {
+					"raw": "localhost:8081/taxi24api/api/trips",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"taxi24api",
+						"api",
+						"trips"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "StartTrip",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\"newStatus\" : \"active\"\n}"
+				},
+				"url": {
+					"raw": "localhost:8081/taxi24api/api/trips/{{trip1Id}}",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"taxi24api",
+						"api",
+						"trips",
+						"{{trip1Id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "CompleteTrip",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\"id\": 1051,\n\"newStatus\" : \"completed\"\n}"
+				},
+				"url": {
+					"raw": "localhost:8081/taxi24api/api/trips/{{trip1Id}}",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"taxi24api",
+						"api",
+						"trips",
+						"{{trip1Id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetTrips",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "localhost:8081/taxi24api/api/trips",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"taxi24api",
+						"api",
+						"trips"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetDrivers",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "localhost:8081/taxi24api/api/drivers",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"taxi24api",
+						"api",
+						"drivers"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
+import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -133,7 +134,7 @@ public class TripService {
         TripStatus currentTripStatus = TripStatus.ACTIVE;
         TripStatus newTripStatus = TripStatus.COMPLETED;
 
-        TripDTO tripDTO = updateTrip(tripId, currentTripStatus, newTripStatus);
+        TripDTO tripDto = tripMapper.toDto(updateTrip(tripId, currentTripStatus, newTripStatus).endDate((LocalDateTime.now())));
         Rider rider = tripRepository.findById(tripId).get().getRider();
         if (rider.getAmountRides() == null) {
             rider.setAmountRides(1);
@@ -142,7 +143,7 @@ public class TripService {
         }
 
         riderRepository.saveAndFlush(rider);
-        return tripDTO;
+        return tripDto;
 
     }
 
@@ -157,7 +158,7 @@ public class TripService {
         TripStatus currentTripStatus = TripStatus.REQUESTED;
         TripStatus newTripStatus = TripStatus.ACTIVE;
 
-        return updateTrip(tripId, currentTripStatus, newTripStatus);
+        return tripMapper.toDto(updateTrip(tripId, currentTripStatus, newTripStatus).startDate(LocalDateTime.now()));
     }
 
     /**
@@ -171,10 +172,10 @@ public class TripService {
         TripStatus currentTripStatus = TripStatus.REQUESTED;
         TripStatus newTripStatus = TripStatus.CANCELLED;
 
-        return updateTrip(tripId, currentTripStatus, newTripStatus);
+        return tripMapper.toDto(updateTrip(tripId, currentTripStatus, newTripStatus));
     }
 
-    private TripDTO updateTrip(long tripId, TripStatus currentTripStatus, TripStatus newTripStatus) {
+    private Trip updateTrip(long tripId, TripStatus currentTripStatus, TripStatus newTripStatus) {
         Optional<Trip> trip = tripRepository.findById(tripId);
         Trip updateTrip = trip.orElseThrow(() -> new NoSuchElementException("No trip with ID " + tripId + " found."));
         if (!updateTrip.getTripStatus().equals(currentTripStatus)) {
@@ -184,6 +185,6 @@ public class TripService {
         updateTrip.setTripStatus(newTripStatus);
         tripRepository.save(updateTrip);
 
-        return tripMapper.toDto(updateTrip);
+        return updateTrip;
     }
 }

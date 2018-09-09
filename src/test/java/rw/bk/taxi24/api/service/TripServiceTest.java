@@ -119,9 +119,9 @@ public class TripServiceTest {
 
     @Test
     public void completeTrip() {
-
-        updateTrip(TripStatus.ACTIVE, TripStatus.COMPLETED, tripId -> service.completeTrip(tripId));
+        Trip trip = updateTrip(TripStatus.ACTIVE, TripStatus.COMPLETED, tripId -> service.completeTrip(tripId));
         verify(riderRepository, times(1)).saveAndFlush(any());
+        assertNotNull("Trip start date was not set", trip.getEndDate());
     }
 
 
@@ -133,7 +133,8 @@ public class TripServiceTest {
 
     @Test
     public void startTrip() {
-        updateTrip(TripStatus.REQUESTED, TripStatus.ACTIVE, tripId -> service.startTrip(tripId));
+        Trip trip = updateTrip(TripStatus.REQUESTED, TripStatus.ACTIVE, tripId -> service.startTrip(tripId));
+        assertNotNull("Trip start date was not set", trip.getStartDate());
     }
 
     @Test(expected = BadTripStatusException.class)
@@ -153,7 +154,7 @@ public class TripServiceTest {
         updateTrip(TripStatus.COMPLETED, TripStatus.CANCELLED, tripId -> service.cancelTrip(tripId));
     }
 
-    private void updateTrip(TripStatus currentStatus, TripStatus newStatus, Function<Long, TripDTO> function) {
+    private Trip updateTrip(TripStatus currentStatus, TripStatus newStatus, Function<Long, TripDTO> function) {
         long tripId = 1l;
         Trip trip = new Trip();
         trip.setId(tripId);
@@ -165,6 +166,7 @@ public class TripServiceTest {
 
         verify(repository, times(1)).save(trip);
         assertEquals(trip.getTripStatus(), newStatus);
+        return trip;
     }
 
 

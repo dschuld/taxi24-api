@@ -2,12 +2,12 @@
     "name": "Trip",
     "fields": [
         {
-            "fieldName": "driverId",
-            "fieldType": "Integer"
+            "fieldName": "driver",
+            "fieldType": "Driver"
         },
         {
-            "fieldName": "riderId",
-            "fieldType": "Integer"
+            "fieldName": "rider",
+            "fieldType": "Rider"
         },
         {
             "fieldName": "tripStatus",

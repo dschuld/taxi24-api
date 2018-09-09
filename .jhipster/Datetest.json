@@ -1,0 +1,23 @@
+{
+    "fluentMethods": true,
+    "clientRootFolder": "",
+    "relationships": [],
+    "fields": [
+        {
+            "fieldName": "startDate",
+            "fieldType": "LocalDate"
+        },
+        {
+            "fieldName": "endDate",
+            "fieldType": "LocalDate"
+        }
+    ],
+    "changelogDate": "20180909062058",
+    "dto": "no",
+    "searchEngine": false,
+    "service": "no",
+    "entityTableName": "datetest",
+    "jpaMetamodelFiltering": false,
+    "pagination": "no",
+    "microserviceName": "taxi24api"
+}

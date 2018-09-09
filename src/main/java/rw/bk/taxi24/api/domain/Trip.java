@@ -5,6 +5,7 @@ import rw.bk.taxi24.api.domain.enumeration.TripStatus;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
@@ -33,11 +34,11 @@ public class Trip implements Serializable {
     @Column(name = "trip_status", nullable = false)
     private TripStatus tripStatus;
 
-    @Column(name = "duration")
-    private Float duration;
+    @Column(name = "start_date")
+    private LocalDateTime startDate;
 
-    @Column(name = "distance")
-    private Float distance;
+    @Column(name = "end_date")
+    private LocalDateTime endDate;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
     public Long getId() {
@@ -87,31 +88,32 @@ public class Trip implements Serializable {
         this.tripStatus = tripStatus;
     }
 
-    public Float getDuration() {
-        return duration;
+    public LocalDateTime getStartDate() {
+        return startDate;
     }
 
-    public Trip duration(Float duration) {
-        this.duration = duration;
+    public Trip startDate(LocalDateTime startDate) {
+        this.startDate = startDate;
         return this;
     }
 
-    public void setDuration(Float duration) {
-        this.duration = duration;
+    public void setStartDate(LocalDateTime startDate) {
+        this.startDate = startDate;
     }
 
-    public Float getDistance() {
-        return distance;
+    public LocalDateTime getEndDate() {
+        return endDate;
     }
 
-    public Trip distance(Float distance) {
-        this.distance = distance;
+    public Trip endDate(LocalDateTime endDate) {
+        this.endDate = endDate;
         return this;
     }
 
-    public void setDistance(Float distance) {
-        this.distance = distance;
+    public void setEndDate(LocalDateTime endDate) {
+        this.endDate = endDate;
     }
+
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove
 
     @Override
@@ -141,8 +143,8 @@ public class Trip implements Serializable {
             ", driverId=" + getDriver().getId() +
             ", riderId=" + getRider().getId() +
             ", tripStatus='" + getTripStatus() + "'" +
-            ", duration=" + getDuration() +
-            ", distance=" + getDistance() +
+            ", startDate='" + getStartDate() + "'" +
+            ", endDate='" + getEndDate() + "'" +
             "}";
     }
 }

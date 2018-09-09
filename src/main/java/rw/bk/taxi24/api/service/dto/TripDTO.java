@@ -1,6 +1,7 @@
 package rw.bk.taxi24.api.service.dto;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 import rw.bk.taxi24.api.domain.Driver;
@@ -20,9 +21,9 @@ public class TripDTO implements Serializable {
 
     private TripStatus tripStatus;
 
-    private Float duration;
+    private LocalDateTime startDate;
 
-    private Float distance;
+    private LocalDateTime endDate;
 
     public Long getId() {
         return id;
@@ -56,20 +57,20 @@ public class TripDTO implements Serializable {
         this.tripStatus = tripStatus;
     }
 
-    public Float getDuration() {
-        return duration;
+    public LocalDateTime getStartDate() {
+        return startDate;
     }
 
-    public void setDuration(Float duration) {
-        this.duration = duration;
+    public void setStartDate(LocalDateTime startDate) {
+        this.startDate = startDate;
     }
 
-    public Float getDistance() {
-        return distance;
+    public LocalDateTime getEndDate() {
+        return endDate;
     }
 
-    public void setDistance(Float distance) {
-        this.distance = distance;
+    public void setEndDate(LocalDateTime endDate) {
+        this.endDate = endDate;
     }
 
     @Override
@@ -100,8 +101,8 @@ public class TripDTO implements Serializable {
             ", driverId=" + getDriver().getId() +
             ", riderId=" + getRider().getId() +
             ", tripStatus='" + getTripStatus() + "'" +
-            ", duration=" + getDuration() +
-            ", distance=" + getDistance() +
+            ", startDate='" + getStartDate() + "'" +
+            ", endDate='" + getEndDate() + "'" +
             "}";
     }
 }

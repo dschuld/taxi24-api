@@ -11,6 +11,7 @@
 
     <include file="config/liquibase/changelog/20180906073755_added_entity_Trip.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20180907093711_changelog.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20180909061341_changelog.xml" relativeToChangelogFile="false"/>
 
 
     <!-- jhipster-needle-liquibase-add-changelog - JHipster will add liquibase changelogs here -->
