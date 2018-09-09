@@ -128,7 +128,9 @@ The application provides 3 domain endpoints:
     - DELETE /trips/{id} deletes a trip
 
 
-
+- taxi24api/api/invoices
+    - GET /invoices request to get a list of invoices.
+    - GET /invoices/{id} to get a specific invoice
 
 Additionally, JHipster applications provide non-domain endpoints for management and information:
 
