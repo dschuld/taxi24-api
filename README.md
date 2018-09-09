@@ -27,8 +27,8 @@ The following 3 CREATE TABLE statements show the data model for the Driver, Ride
         driver_id integer NOT NULL,
         rider_id integer NOT NULL,
         trip_status integer NOT NULL,
-        duration real,
-        distance real,
+        start_date TIMESTAMP, 
+        end_date TIMESTAMP 
         CONSTRAINT pk_trip PRIMARY KEY (id)
     )
 
@@ -51,6 +51,9 @@ The following 3 CREATE TABLE statements show the data model for the Driver, Ride
         longitude real NOT NULL,
         CONSTRAINT pk_rider PRIMARY KEY (id)
     )
+    
+    
+    CREATE SEQUENCE PUBLIC.HIBERNATE_SEQUENCE START WITH 1000 INCREMENT BY 50;
 
 
 ## API
